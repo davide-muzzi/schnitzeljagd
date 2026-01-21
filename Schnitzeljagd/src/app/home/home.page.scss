@@ -1,67 +1,39 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.top-people {
-  background-color: rgba($color: #727272, $alpha: 0.3);
-  padding-bottom: 100px;
-  margin: 20px;
-  color: white;
-  text-align: center;
-}
-
 ion-content {
   --background: linear-gradient(to bottom right, #211243, #03091F);
-
-}
-
-
-.top-title {
-  color: cornflowerblue;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-}
-
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
-}
-
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
-}
-
-#container a {
-  text-decoration: none;
-}
-
-
-.food {
-  background-color: rgba($color: #727272, $alpha: 0.3);
-  padding: 20px;
-  margin: 20px;
-  color: white;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .page-container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  /* pushes bottom-people to the bottom */
+  justify-content: space-around;
+  align-items: center;
   height: 100%;
-  /* fill the ion-content height */
-  padding: 20px;
+  width: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.top-people,
+.food {
+  background-color: rgba(114, 114, 114, 0.3);
+  padding: 10px;
+  margin: 5px 0;
+  color: white;
+  text-align: center;
+  width: 90%;
+  border-radius: 8px;
+}
+
+.start-button {
+  background-image: linear-gradient(to right, #A94AFF, #3B7CFF);
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 90%;
 }

@@ -1,4 +1,3 @@
-
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title class="top-title">
@@ -6,13 +5,9 @@
     </ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title class="top-title" size="large">Schnitzeljagd</ion-title>
-    </ion-toolbar>
-  </ion-header>
- <div class="page-container">
+  <div class="page-container">
     <div class="top-people">
       <h2>Top Jäger</h2>
       <div>people</div>
@@ -22,5 +17,12 @@
       <div>Schnitzel</div>
       <div>Kartoffel</div>
     </div>
+
+    <button class="start-button" id="start">Jagd starten</button>
+    <ion-alert  
+      trigger="start"
+      header="Please enter your info"
+      [buttons]="startButton"
+      [inputs]="startInput"></ion-alert>
   </div>
 </ion-content>
