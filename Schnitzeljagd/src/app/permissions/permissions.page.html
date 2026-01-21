@@ -1,13 +1,76 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>permissions</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="permissions-page">
+  <div class="page">
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">permissions</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <!-- Back button (icon) -->
+    <button class="back-btn">
+      <img src="../assets/icons/arrow_left.svg" alt="Back" />
+    </button>
+
+    <!-- Header -->
+    <div class="header">
+      <div class="header-icon">🔐</div>
+
+      <h1>Berechtigungen</h1>
+      <p>
+        Hey Dave! Für die Jagd benötigen wir:
+      </p>
+    </div>
+
+    <!-- Standort -->
+    <!-- add class "granted" later -->
+    <div class="permission-card">
+      <div class="perm-top">
+        <div class="perm-icon">
+          <img src="../assets/icons/pin.svg" alt="Location" />
+        </div>
+        <h2>Standortzugriff</h2>
+      </div>
+
+      <p class="perm-desc">
+        Wir benötigen deinen Standort, um dich zu den Challenge-Orten
+        zu navigieren und deine zurückgelegte Distanz zu messen.
+      </p>
+
+      <button class="perm-action location">
+        Standort erlauben
+      </button>
+
+      <div class="perm-granted">
+        <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
+        <span>Berechtigung erteilt</span>
+      </div>
+    </div>
+
+    <!-- Kamera -->
+    <!-- add class "granted" later -->
+    <div class="permission-card">
+      <div class="perm-top">
+        <div class="perm-icon">
+          <img src="../assets/icons/camera.svg" alt="Camera" />
+        </div>
+        <h2>Kamerazugriff</h2>
+      </div>
+
+      <p class="perm-desc">
+        Die Kamera wird benötigt, um QR-Codes zu scannen und bestimmte
+        Challenges zu erfüllen.
+      </p>
+
+      <button class="perm-action camera">
+        Kamera erlauben
+      </button>
+
+      <div class="perm-granted">
+        <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
+        <span>Berechtigung erteilt</span>
+      </div>
+    </div>
+
+    <!-- Continue -->
+    <!-- add class "active" later -->
+    <button class="continue-btn">
+      Jagd beginnen! 🎯
+    </button>
+
+  </div>
 </ion-content>
