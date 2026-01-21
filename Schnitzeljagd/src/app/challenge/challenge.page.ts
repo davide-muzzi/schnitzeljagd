@@ -61,7 +61,9 @@ export class ChallengePage implements OnInit, OnDestroy {
   // -------------------- LIFECYCLE --------------------
 
   ngOnInit(): void {
-    if (!this.game.activeRun) {
+    const DEV_BYPASS = true;
+
+    if (!this.game.activeRun && !DEV_BYPASS) {
       this.router.navigateByUrl('/home');
       return;
     }
