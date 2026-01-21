@@ -1,31 +1,112 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title class="top-title">
-      Schnitzeljagd
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="home">
+  <div class="page">
 
-<ion-content [fullscreen]="true">
-  <div class="page-container">
-    <div class="top-people">
-      <h2>Top Jäger</h2>
-      <div>people</div>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="app-icon">🥩</div>
+
+      <h1>
+        Schnitzel<br />
+        <span>Jagd</span>
+      </h1>
+
+      <p class="subtitle">
+        ✨ 6 Challenges · Unendlicher Spass ✨
+      </p>
     </div>
 
-    <div class="food">
-      <div>Schnitzel</div>
-      <div>Kartoffel</div>
+    <!-- LEADERBOARD -->
+    <div class="card leaderboard">
+      <div class="card-title">
+        <img
+          src="../assets/icons/crown.svg"
+          alt="Crown"
+          class="icon"
+        />
+        <span>Top Jäger</span>
+      </div>
+
+      <div class="leader first">
+        <div class="avatar">
+          👩‍🦰
+          <div class="trophy-badge">
+            <img
+              src="../assets/icons/trophy.svg"
+              alt="Trophy"
+            />
+          </div>
+        </div>
+
+        <div class="info">
+          <strong>Anna S.</strong>
+          <span>#1 Platz</span>
+        </div>
+
+        <div class="points">
+          480<br />
+          <small>Punkte</small>
+        </div>
+      </div>
+
+      <div class="leader">
+        <div class="avatar">🧑‍🦱</div>
+
+        <div class="info">
+          <strong>Max M.</strong>
+          <span>#2 Platz</span>
+        </div>
+
+        <div class="points">
+          460<br />
+          <small>Punkte</small>
+        </div>
+      </div>
+
+      <div class="leader">
+        <div class="avatar">👱‍♀️</div>
+
+        <div class="info">
+          <strong>Lisa W.</strong>
+          <span>#3 Platz</span>
+        </div>
+
+        <div class="points">
+          440<br />
+          <small>Punkte</small>
+        </div>
+      </div>
     </div>
 
-   <button class="start-button" id="present-alert">Jagd starten</button>
+    <!-- ACTIONS (SIDE BY SIDE, SEPARATE) -->
+    <div class="actions">
+      <div class="card action-card">
+        <div class="emoji big">🥩</div>
+        <div>
+          <strong>Schnitzel</strong>
+          <span>Sammeln</span>
+        </div>
+      </div>
 
-<ion-alert  
-  trigger="present-alert"
-  header="Bitte Namen eingeben"
-  [buttons]="startButtons"
-  [inputs]="startInputs">
-</ion-alert>
+      <div class="card action-card">
+        <div class="emoji big">🥔</div>
+        <div>
+          <strong>Kartoffeln</strong>
+          <span>Vermeiden</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- START -->
+    <div class="start-wrapper">
+      <button class="start-btn">
+        Jagd starten
+        <span class="arrow">➜</span>
+      </button>
+
+      <p class="hint">
+        6 spannende Aufgaben warten auf dich!
+      </p>
+    </div>
 
   </div>
 </ion-content>
