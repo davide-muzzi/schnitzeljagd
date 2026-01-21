@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { GameService } from '../services/game';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonAlert } from '@ionic/angular/standalone';
 
 @Component({
@@ -9,26 +10,40 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonAlert } from '@ionic/an
 })
 export class HomePage {
 
-  public startButton = [
+
+  constructor(private gameService: GameService) { }
+
+  public startButtons = [
     {
       text: 'Cancel',
       role: 'cancel',
     },
     {
-      text: 'Add',
-      role: 'confirm'
+      text: 'Start',
+      role: 'confirm',
+      handler: (data: any) => {
+        const name = data.name?.trim();
+        if (!name) return false;
+
+        this.startGame(name);
+        return true;
+      }
     },
   ];
-  constructor() { }
 
-
-  public startInput = [
+  public startInputs = [
     {
-      name: 'Name',
-      type: 'string',
+      name: 'name',
+      type: 'text',
       placeholder: 'Name',
-      attribute: 'required',
+      attributes: {
+        required: true,
+      }
     }
-
   ];
+
+  async startGame(name: string) {
+    await this.gameService.start(name);
+    console.log('Game started for:', name);
+  }
 }

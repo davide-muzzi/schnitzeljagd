@@ -18,11 +18,14 @@
       <div>Kartoffel</div>
     </div>
 
-    <button class="start-button" id="start">Jagd starten</button>
-    <ion-alert  
-      trigger="start"
-      header="Please enter your info"
-      [buttons]="startButton"
-      [inputs]="startInput"></ion-alert>
+   <button class="start-button" id="present-alert">Jagd starten</button>
+
+<ion-alert  
+  trigger="present-alert"
+  header="Bitte Namen eingeben"
+  [buttons]="startButtons"
+  [inputs]="startInputs">
+</ion-alert>
+
   </div>
 </ion-content>
