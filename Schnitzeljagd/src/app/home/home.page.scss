@@ -8,6 +8,27 @@
   transform: translateY(-50%);
 }
 
+.top-people {
+  background-color: rgba($color: #727272, $alpha: 0.3);
+  padding-bottom: 100px;
+  margin: 20px;
+  color: white;
+  text-align: center;
+}
+
+ion-content {
+  --background: linear-gradient(to bottom right, #211243, #03091F);
+
+}
+
+
+.top-title {
+  color: cornflowerblue;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+
 #container strong {
   font-size: 20px;
   line-height: 26px;
@@ -24,4 +45,23 @@
 
 #container a {
   text-decoration: none;
+}
+
+
+.food {
+  background-color: rgba($color: #727272, $alpha: 0.3);
+  padding: 20px;
+  margin: 20px;
+  color: white;
+  text-align: center;
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* pushes bottom-people to the bottom */
+  height: 100%;
+  /* fill the ion-content height */
+  padding: 20px;
 }
