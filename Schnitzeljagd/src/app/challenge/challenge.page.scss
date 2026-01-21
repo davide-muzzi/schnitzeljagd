@@ -1,27 +1,258 @@
-.challenge-title {
-  margin-top: 0.5rem;
-  font-size: 1.4rem;
-  font-weight: 600;
+.challenge-page {
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+
+  /* BASE BACKGROUND */
+  background: radial-gradient(
+    circle at top right,
+    rgba(0, 140, 255, 0.28),
+    #05030a 65%
+  );
 }
 
-.challenge-desc {
-  color: var(--ion-color-medium);
-  margin-bottom: 1rem;
+/* PAGE WRAPPER */
+.page {
+  padding: 24px 20px 32px;
+  position: relative;
+  z-index: 1;
+  overflow-x: hidden;
 }
 
-.stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5rem 1rem;
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
 
-  div {
-    display: flex;
-    justify-content: space-between;
+.header-left {
+  .hello {
+    margin: 0 0 8px;
+    font-size: 13px;
+    opacity: 0.7;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
   }
 }
 
-.empty {
+/* CLOSE BUTTON */
+.close-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+  }
+}
+
+/* PROGRESS BAR */
+.progress-bar {
+  margin: 14px 0 26px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+
+  .progress {
+    height: 100%;
+    background: linear-gradient(90deg, #00c2ff, #4f7cff);
+    border-radius: 999px;
+    transition: width 0.3s ease;
+  }
+}
+
+/* CHALLENGE ICON */
+.challenge-icon {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 12px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(0, 140, 255, 0.25),
+    rgba(0, 60, 120, 0.25)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  .main-icon {
+    width: 42px;
+    height: 42px;
+    object-fit: contain;
+  }
+
+  .status-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #00c2ff, #0077ff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    img {
+      width: 14px;
+      height: 14px;
+      object-fit: contain;
+    }
+  }
+
+  &.reached {
+    .status-badge {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+    }
+  }
+}
+
+/* DISTANCE */
+.distance-info {
   text-align: center;
-  margin-top: 2rem;
-  color: var(--ion-color-medium);
+  font-size: 14px;
+  color: #00c2ff;
+  margin-bottom: 14px;
+}
+
+/* TITLE + DESCRIPTION */
+.title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+}
+
+.description {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.75;
+  line-height: 1.4;
+}
+
+/* STATS */
+.stats {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.stat-card {
+  background: #0F1324;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 14px;
+  text-align: center;
+
+  .emoji {
+    font-size: 22px;
+  }
+
+  .value {
+    margin-top: 6px;
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .label {
+    margin-top: 2px;
+    font-size: 12px;
+    opacity: 0.6;
+  }
+}
+
+/* PRIMARY BUTTON */
+.primary-btn {
+  margin-top: 26px;
+  width: 100%;
+  padding: 18px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #00c2ff, #0077ff);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  img {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    transform: scale(1.03);
+  }
+}
+
+/* SKIP BUTTON */
+.skip-btn {
+  margin-top: 14px;
+  width: 100%;
+  padding: 14px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0F1324;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #fff;
+  }
+}
+
+/* PULSE ANIMATION */
+@keyframes pulse-bg {
+  0% {
+    opacity: 0.75;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.75;
+  }
+}
+
+.bg-pulse {
+  position: absolute;
+  top: -25%;
+  right: -15%;
+  width: 120%;
+  height: 120%;
+  background: radial-gradient(
+    circle at top right,
+    rgba(0, 140, 255, 0.45),
+    transparent 60%
+  );
+  animation: pulse-bg 4s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 0;
 }

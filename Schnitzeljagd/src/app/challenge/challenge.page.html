@@ -1,71 +1,81 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Schnitzeljagd</ion-title>
+<ion-content class="challenge-page">
+  <div class="bg-pulse"></div>
 
-    <ion-buttons slot="end">
-      <ion-button color="danger" (click)="abort()"> Abbrechen </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
+  <div class="page">
 
-<ion-content class="ion-padding">
-  <!-- Active challenge -->
-  <ng-container *ngIf="currentChallenge; else noChallenge">
-    <h2 class="challenge-title">{{ currentChallenge.title }}</h2>
+    <!-- HEADER -->
+    <div class="header">
+      <div class="header-left">
+        <p class="hello">Hey, Dave 👋</p>
+        <h1>Challenge {{ currentIndex + 1 }}/{{ challenges.length || "Error" }}</h1>
+      </div>
 
-    <p class="challenge-intro">{{ currentChallenge.intro }}</p>
+      <button class="close-btn" (click)="abort()">
+        <img src="../assets/icons/x_cross.svg" alt="Close" />
+      </button>
+    </div>
 
-    <!-- Status / progress -->
-    <ion-card>
-      <ion-card-content class="stats">
-        <div>
-          <strong>Fortschritt</strong>
-          <span>{{ currentIndex + 1 }} / {{ challenges.length }}</span>
-        </div>
+    <!-- PROGRESS BAR -->
+    <div class="progress-bar">
+      <div
+        class="progress"
+        [style.width.%]="challenges.length ? ((currentIndex + 1) / challenges.length) * 100 : 0"
+      ></div>
+    </div>
 
-        <div>
-          <strong>Schnitzel</strong>
-          <span>{{ gameRun?.schnitzel }}</span>
-        </div>
+    <!-- CHALLENGE ICON -->
+    <div class="challenge-icon">
+      <div class="status-badge">
+        <img src="../assets/icons/lightning_bolt_white.svg" alt="Active" />
+      </div>
 
-        <div>
-          <strong>Kartoffeln</strong>
-          <span>{{ gameRun?.kartoffeln }}</span>
-        </div>
-      </ion-card-content>
-    </ion-card>
+      <img
+        src="../assets/icons/pin.svg"
+        alt="Challenge Icon"
+        class="main-icon"
+      />
+    </div>
 
-    <!-- Dynamic status text -->
-    <p *ngIf="statusText" class="status">{{ statusText }}</p>
+    <!-- DISTANCE -->
+    <div class="distance-info">
+      Noch <strong>137 m</strong> entfernt
+    </div>
 
-    <!-- Primary action -->
-    <ion-button expand="block" color="primary" (click)="primaryAction()">
-      Aktion ausführen
-    </ion-button>
+    <!-- TITLE -->
+    <h2 class="title">
+      {{ currentChallenge?.title || 'Standort finden' }}
+    </h2>
 
-    <!-- Continue -->
-    <ion-button
-      expand="block"
-      color="success"
-      [disabled]="!isDone"
-      (click)="nextChallenge()"
-    >
-      Weiter
-    </ion-button>
+    <!-- DESCRIPTION (FALLBACK ADDED) -->
+    <p class="description">
+      {{ currentChallenge?.intro || 'Begib dich zum vorgegebenen Standort. Finde den Ort mit den Koordinaten.' }}
+    </p>
 
-    <!-- Skip -->
-    <ion-button
-      expand="block"
-      fill="outline"
-      color="medium"
-      (click)="skipChallenge()"
-    >
-      Aufgabe überspringen
-    </ion-button>
-  </ng-container>
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="emoji">🥩</div>
+        <div class="value">{{ gameRun?.schnitzel ?? 0 }}</div>
+        <div class="label">Schnitzel</div>
+      </div>
 
-  <!-- No active challenge -->
-  <ng-template #noChallenge>
-    <p class="empty">Keine aktive Aufgabe.</p>
-  </ng-template>
+      <div class="stat-card">
+        <div class="emoji">🥔</div>
+        <div class="value">{{ gameRun?.kartoffeln ?? 0 }}</div>
+        <div class="label">Kartoffeln</div>
+      </div>
+    </div>
+
+    <!-- PRIMARY ACTION -->
+    <button class="primary-btn">
+      <img src="../assets/icons/checkmark_white.svg" alt="Check" />
+      Challenge abschließen
+    </button>
+
+    <!-- SKIP -->
+    <button class="skip-btn">
+      Challenge überspringen
+    </button>
+
+  </div>
 </ion-content>
