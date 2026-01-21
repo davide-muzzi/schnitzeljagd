@@ -1,39 +1,52 @@
-import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+
 import { Geolocation } from '@capacitor/geolocation';
 import { Network } from '@capacitor/network';
 import { Device } from '@capacitor/device';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+
+import { CommonModule } from '@angular/common';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonButton,
+  IonContent,
+  IonCard,
+  IonCardContent,
+} from '@ionic/angular/standalone';
 
 import { GameService } from '../services/game';
 import { Challenge } from '../models/challenge';
 
 @Component({
   selector: 'app-challenge',
+  standalone: true,
   templateUrl: './challenge.page.html',
   styleUrls: ['./challenge.page.scss'],
+  imports: [
+    CommonModule,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonButtons,
+    IonButton,
+    IonContent,
+    IonCard,
+    IonCardContent,
+  ],
 })
 export class ChallengePage implements OnInit, OnDestroy {
-  run = signal(this.game.activeRun);
+  // -------------------- RUNTIME STATE --------------------
 
-  challenge = computed<Challenge | null>(() => {
-    const run = this.run();
-    if (!run) return null;
-    return this.game.challenges[run.currentIndex];
-  });
-
-  progress = computed(() => {
-    const run = this.run();
-    if (!run) return 0;
-    return (run.currentIndex + 1) / this.game.challenges.length;
-  });
-
-  statusText = signal('');
-  isDone = signal(false);
+  statusText = '';
+  isDone = false;
 
   // geo / distance
   private geoWatchId: string | null = null;
-  walkedMeters = signal(0);
+  walkedMeters = 0;
 
   // wifi
   private sawConnected = false;
@@ -45,13 +58,14 @@ export class ChallengePage implements OnInit, OnDestroy {
     private router: Router,
   ) {}
 
+  // -------------------- LIFECYCLE --------------------
+
   ngOnInit(): void {
     if (!this.game.activeRun) {
       this.router.navigateByUrl('/home');
       return;
     }
 
-    this.run.set(this.game.activeRun);
     this.resetChallenge();
   }
 
@@ -59,10 +73,54 @@ export class ChallengePage implements OnInit, OnDestroy {
     this.cleanup();
   }
 
-  /* -------------------- UI ACTIONS -------------------- */
+  // -------------------- TEMPLATE GETTERS --------------------
+  // (HTML binds ONLY to these)
+
+  get gameRun() {
+    return this.game.activeRun;
+  }
+
+  get currentChallenge(): Challenge | null {
+    const run = this.game.activeRun;
+    if (!run) return null;
+    return this.game.challenges[run.currentIndex] ?? null;
+  }
+
+  get challenges(): Challenge[] {
+    return this.game.challenges;
+  }
+
+  get currentIndex(): number {
+    return this.game.activeRun?.currentIndex ?? 0;
+  }
+
+  // -------------------- UI ACTIONS --------------------
+
+  abort(): void {
+    this.game.abort();
+    this.router.navigateByUrl('/leaderboard');
+  }
+
+  nextChallenge(): void {
+    if (!this.isDone) return;
+
+    this.game.completeChallenge();
+
+    if (!this.game.activeRun) {
+      this.router.navigateByUrl('/result');
+      return;
+    }
+
+    this.resetChallenge();
+  }
+
+  skipChallenge(): void {
+    this.game.skipChallenge();
+    this.resetChallenge();
+  }
 
   primaryAction(): void {
-    const ch = this.challenge();
+    const ch = this.currentChallenge;
     if (!ch) return;
 
     switch (ch.id) {
@@ -79,47 +137,21 @@ export class ChallengePage implements OnInit, OnDestroy {
         this.checkWifi();
         break;
       default:
-        // geo + distance auto-track
-        this.statusText.set('Tracking läuft…');
+        this.statusText = 'Tracking läuft…';
     }
   }
 
-  async complete(): Promise<void> {
-    if (!this.isDone()) return;
-
-    await this.game.completeChallenge();
-
-    if (!this.game.activeRun) {
-      this.router.navigateByUrl('/result');
-      return;
-    }
-
-    this.run.set(this.game.activeRun);
-    this.resetChallenge();
-  }
-
-  skip(): void {
-    this.game.skipChallenge();
-    this.run.set(this.game.activeRun);
-    this.resetChallenge();
-  }
-
-  abort(): void {
-    this.game.abort();
-    this.router.navigateByUrl('/leaderboard');
-  }
-
-  /* -------------------- CHALLENGE SETUP -------------------- */
+  // -------------------- CHALLENGE SETUP --------------------
 
   private resetChallenge(): void {
     this.cleanup();
-    this.isDone.set(false);
-    this.statusText.set('');
-    this.walkedMeters.set(0);
+    this.isDone = false;
+    this.statusText = '';
+    this.walkedMeters = 0;
     this.sawConnected = false;
     this.sawDisconnected = false;
 
-    const ch = this.challenge();
+    const ch = this.currentChallenge;
     if (!ch) return;
 
     if (ch.id === 'geo_target' || ch.id === 'distance') {
@@ -146,7 +178,7 @@ export class ChallengePage implements OnInit, OnDestroy {
     }
   }
 
-  /* -------------------- GEO + DISTANCE -------------------- */
+  // -------------------- GEO + DISTANCE --------------------
 
   private async startGeoTracking(ch: Challenge): Promise<void> {
     let lastLat: number | null = null;
@@ -164,26 +196,25 @@ export class ChallengePage implements OnInit, OnDestroy {
           const { lat: tLat, lng: tLng, radiusM } = ch.config!;
           const d = this.distance(lat, lng, tLat, tLng);
 
-          this.statusText.set(`Noch ${Math.round(d)} m`);
+          this.statusText = `Noch ${Math.round(d)} m`;
 
           if (d <= radiusM) {
-            this.isDone.set(true);
-            this.statusText.set('✅ Ziel erreicht!');
+            this.isDone = true;
+            this.statusText = '✅ Ziel erreicht!';
           }
         }
 
         if (ch.id === 'distance') {
           if (lastLat !== null && lastLng !== null) {
             const step = this.distance(lat, lng, lastLat, lastLng);
-            const total = this.walkedMeters() + step;
-            this.walkedMeters.set(total);
+            this.walkedMeters += step;
 
             const goal = ch.config!['goalM'] as number;
-            this.statusText.set(`${Math.floor(total)} m / ${goal} m`);
+            this.statusText = `${Math.floor(this.walkedMeters)} m / ${goal} m`;
 
-            if (total >= goal) {
-              this.isDone.set(true);
-              this.statusText.set('✅ Distanz erreicht!');
+            if (this.walkedMeters >= goal) {
+              this.isDone = true;
+              this.statusText = '✅ Distanz erreicht!';
             }
           }
 
@@ -213,13 +244,13 @@ export class ChallengePage implements OnInit, OnDestroy {
     return 2 * R * Math.asin(Math.sqrt(a));
   }
 
-  /* -------------------- QR -------------------- */
+  // -------------------- QR --------------------
 
   private async scanQr(): Promise<void> {
     try {
       const perm = await BarcodeScanner.requestPermissions();
       if (perm.camera !== 'granted') {
-        this.statusText.set('❌ Kamera verweigert');
+        this.statusText = '❌ Kamera verweigert';
         return;
       }
 
@@ -227,25 +258,25 @@ export class ChallengePage implements OnInit, OnDestroy {
       const raw = res?.barcodes?.[0]?.rawValue ?? '';
 
       if (!raw) {
-        this.statusText.set('❌ Kein QR erkannt');
+        this.statusText = '❌ Kein QR erkannt';
         return;
       }
 
-      if (raw === this.challenge()!.config!['expected']) {
-        this.isDone.set(true);
-        this.statusText.set('✅ QR korrekt!');
+      if (raw === this.currentChallenge!.config!['expected']) {
+        this.isDone = true;
+        this.statusText = '✅ QR korrekt!';
       } else {
-        this.statusText.set('❌ Falscher QR-Code');
+        this.statusText = '❌ Falscher QR-Code';
       }
     } catch {
-      this.statusText.set('❌ Scan abgebrochen');
+      this.statusText = '❌ Scan abgebrochen';
     }
   }
 
-  /* -------------------- SENSOR -------------------- */
+  // -------------------- SENSOR --------------------
 
   private checkSensor(): void {
-    this.statusText.set('Gerät bewegen…');
+    this.statusText = 'Gerät bewegen…';
 
     let swings = 0;
     let upsideDown = false;
@@ -269,8 +300,8 @@ export class ChallengePage implements OnInit, OnDestroy {
       if (upsideDown && swings >= 2) {
         window.removeEventListener('deviceorientation', orient);
         window.removeEventListener('devicemotion', motion);
-        this.isDone.set(true);
-        this.statusText.set('✅ Sensor erkannt!');
+        this.isDone = true;
+        this.statusText = '✅ Sensor erkannt!';
       }
     };
 
@@ -283,10 +314,10 @@ export class ChallengePage implements OnInit, OnDestroy {
     }, 12000);
   }
 
-  /* -------------------- CHARGING -------------------- */
+  // -------------------- CHARGING --------------------
 
   private async pollCharging(): Promise<void> {
-    for (let i = 0; i < 30 && !this.isDone(); i++) {
+    for (let i = 0; i < 30 && !this.isDone; i++) {
       await this.checkCharging();
       await new Promise((r) => setTimeout(r, 2000));
     }
@@ -295,14 +326,14 @@ export class ChallengePage implements OnInit, OnDestroy {
   private async checkCharging(): Promise<void> {
     const info = await Device.getBatteryInfo();
     if (info.isCharging) {
-      this.isDone.set(true);
-      this.statusText.set('✅ Gerät lädt');
+      this.isDone = true;
+      this.statusText = '✅ Gerät lädt';
     } else {
-      this.statusText.set('Nicht am Strom');
+      this.statusText = 'Nicht am Strom';
     }
   }
 
-  /* -------------------- WIFI -------------------- */
+  // -------------------- WIFI --------------------
 
   private async startWifiTracking(): Promise<void> {
     const status = await Network.getStatus();
@@ -318,8 +349,8 @@ export class ChallengePage implements OnInit, OnDestroy {
           : (this.sawDisconnected = true);
 
         if (this.sawConnected && this.sawDisconnected) {
-          this.isDone.set(true);
-          this.statusText.set('✅ WLAN gewechselt!');
+          this.isDone = true;
+          this.statusText = '✅ WLAN gewechselt!';
         }
       },
     );
@@ -330,8 +361,8 @@ export class ChallengePage implements OnInit, OnDestroy {
     s.connected ? (this.sawConnected = true) : (this.sawDisconnected = true);
 
     if (this.sawConnected && this.sawDisconnected) {
-      this.isDone.set(true);
-      this.statusText.set('✅ WLAN gewechselt!');
+      this.isDone = true;
+      this.statusText = '✅ WLAN gewechselt!';
     }
   }
 }

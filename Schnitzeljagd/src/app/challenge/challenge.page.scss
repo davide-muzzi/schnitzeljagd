@@ -1,0 +1,27 @@
+.challenge-title {
+  margin-top: 0.5rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.challenge-desc {
+  color: var(--ion-color-medium);
+  margin-bottom: 1rem;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem 1rem;
+
+  div {
+    display: flex;
+    justify-content: space-between;
+  }
+}
+
+.empty {
+  text-align: center;
+  margin-top: 2rem;
+  color: var(--ion-color-medium);
+}

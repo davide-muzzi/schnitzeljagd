@@ -1,13 +1,71 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>challenge</ion-title>
+    <ion-title>Schnitzeljagd</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button color="danger" (click)="abort()"> Abbrechen </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">challenge</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content class="ion-padding">
+  <!-- Active challenge -->
+  <ng-container *ngIf="currentChallenge; else noChallenge">
+    <h2 class="challenge-title">{{ currentChallenge.title }}</h2>
+
+    <p class="challenge-intro">{{ currentChallenge.intro }}</p>
+
+    <!-- Status / progress -->
+    <ion-card>
+      <ion-card-content class="stats">
+        <div>
+          <strong>Fortschritt</strong>
+          <span>{{ currentIndex + 1 }} / {{ challenges.length }}</span>
+        </div>
+
+        <div>
+          <strong>Schnitzel</strong>
+          <span>{{ gameRun?.schnitzel }}</span>
+        </div>
+
+        <div>
+          <strong>Kartoffeln</strong>
+          <span>{{ gameRun?.kartoffeln }}</span>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Dynamic status text -->
+    <p *ngIf="statusText" class="status">{{ statusText }}</p>
+
+    <!-- Primary action -->
+    <ion-button expand="block" color="primary" (click)="primaryAction()">
+      Aktion ausführen
+    </ion-button>
+
+    <!-- Continue -->
+    <ion-button
+      expand="block"
+      color="success"
+      [disabled]="!isDone"
+      (click)="nextChallenge()"
+    >
+      Weiter
+    </ion-button>
+
+    <!-- Skip -->
+    <ion-button
+      expand="block"
+      fill="outline"
+      color="medium"
+      (click)="skipChallenge()"
+    >
+      Aufgabe überspringen
+    </ion-button>
+  </ng-container>
+
+  <!-- No active challenge -->
+  <ng-template #noChallenge>
+    <p class="empty">Keine aktive Aufgabe.</p>
+  </ng-template>
 </ion-content>
