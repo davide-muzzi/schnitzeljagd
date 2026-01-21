@@ -2,13 +2,14 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-
 import { ActiveRun } from '../models/active-run';
 import { RunResult } from '../models/run-result';
 import { Challenge } from '../models/challenge';
 import { StorageService } from './storage';
 import { LeaderboardApiService } from './leaderboard-api';
 import { randomPointWithinRadius, randomDistanceMeters } from './geo.util';
+import { Camera, CameraPermissionType } from '@capacitor/camera';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
 @Injectable({
   providedIn: 'root',
@@ -25,7 +26,7 @@ export class GameService {
   constructor(
     private storage: StorageService,
     private leaderboardApi: LeaderboardApiService,
-  ) {}
+  ) { }
 
   get activeRun(): ActiveRun | null {
     return this.activeRun$.value;
@@ -35,6 +36,16 @@ export class GameService {
     const pos = await Geolocation.getCurrentPosition({
       enableHighAccuracy: true,
     });
+
+    const perm = await BarcodeScanner.checkPermissions();
+
+    if (perm.camera !== 'granted') {
+      const request = await BarcodeScanner.requestPermissions();
+      if (request.camera !== 'granted') {
+        throw new Error('Camera permission denied');
+      }
+    }
+
 
     const startLat = pos.coords.latitude;
     const startLng = pos.coords.longitude;
@@ -121,7 +132,7 @@ export class GameService {
     };
 
     await this.storage.saveRun(result);
-    await this.leaderboardApi.submit(result).catch(() => {});
+    await this.leaderboardApi.submit(result).catch(() => { });
 
     this.lastResult$.next(result);
     this.activeRun$.next(null);
