@@ -14,7 +14,6 @@
     </div>
 
     <!-- Standort -->
-    <!-- add class "granted" later -->
     <div class="permission-card">
       <div class="perm-top">
         <div class="perm-icon">
@@ -29,8 +28,8 @@
       </p>
 
       <button *ngIf="!locationGranted"
-              class="perm-action location"
-              (click)="locationperm()">
+        class="perm-action location"
+        (click)="locationperm()">
         Standort erlauben
       </button>
 
@@ -42,7 +41,6 @@
     </div>
 
     <!-- Kamera -->
-    <!-- add class "granted" later -->
     <div class="permission-card">
       <div class="perm-top">
         <div class="perm-icon">
@@ -57,8 +55,8 @@
       </p>
 
       <button *ngIf="!cameraGranted"
-              class="perm-action camera"
-              (click)="cameraperm()">
+        class="perm-action camera"
+        (click)="cameraperm()">
         Kamera erlauben
       </button>
 
