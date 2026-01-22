@@ -28,7 +28,7 @@
         navigieren und deine zurückgelegte Distanz zu messen.
       </p>
 
- <button *ngIf="!locationGranted"
+      <button *ngIf="!locationGranted"
               class="perm-action location"
               (click)="locationperm()">
         Standort erlauben
@@ -69,12 +69,11 @@
     </div>
 
     <!-- Continue -->
-    <!-- add class "active" later -->
-<button class="continue-btn"
-        (click)="startGame(playerName)"
-        [disabled]="!cameraGranted"
-        [class.active]="cameraGranted">
-  Jagd beginnen! 🎯
-</button>
+    <button class="continue-btn"
+      (click)="startGame(playerName)"
+      [disabled]="!cameraGranted"
+      [class.active]="cameraGranted">
+      Jagd beginnen! 🎯
+    </button>
   </div>
 </ion-content>
