@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonHeader,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/angular/standalone';
 import { Router, RouterLink } from '@angular/router';
 import { GameService } from '../services/game';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
@@ -15,14 +20,26 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './permissions.page.html',
   styleUrls: ['./permissions.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, RouterLink, CommonModule, FormsModule]
+  imports: [
+    IonContent,
+    IonHeader,
+    IonTitle,
+    IonToolbar,
+    RouterLink,
+    CommonModule,
+    FormsModule,
+  ],
 })
 export class PermissionsPage implements OnInit {
   locationGranted = false;
   cameraGranted = false;
   playerName: string = '';
 
-  constructor(private gameService: GameService, private router: Router, private route: ActivatedRoute) { }
+  constructor(
+    private gameService: GameService,
+    private router: Router,
+    private route: ActivatedRoute,
+  ) {}
 
   abort() {
     console.log('Game aborted');
@@ -33,34 +50,48 @@ export class PermissionsPage implements OnInit {
   startgame() {
     if (!this.locationGranted || !this.cameraGranted) return;
 
-    this.gameService.start(this.playerName.trim()).then(() => {
-      this.router.navigate(['/challenge']);
-    }).catch((err) => {
-      console.error('Error starting game:', err);
-    });
+    this.gameService
+      .start(this.playerName.trim())
+      .then(() => {
+        this.router.navigate(['/challenge']);
+      })
+      .catch((err) => {
+        console.error('Error starting game:', err);
+      });
   }
 
   async locationperm() {
     try {
+      // 1. Check current permissions
       let perm = await Geolocation.checkPermissions();
-      console.log('Current permission status:', perm);
+      console.log('Current location permission:', perm);
 
-      if (perm.location !== 'granted') {
-        const request = await Geolocation.requestPermissions();
-        perm = request;
+      // 2. Request if not granted at all
+      if (perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
+        perm = await Geolocation.requestPermissions();
         console.log('Permission after request:', perm);
       }
 
-      if (perm.location === 'granted' || Capacitor.getPlatform() === 'android') {
-        const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
-        console.log('Location granted, position:', pos);
-        this.locationGranted = true;
-      } else {
+      // 3. Re-check final state (Android-safe)
+      const granted =
+        perm.location === 'granted' || perm.coarseLocation === 'granted';
+
+      if (!granted) {
         console.warn('Location permission denied');
         this.locationGranted = false;
+        return;
       }
+
+      // 4. Permission is valid --> test GPS access
+      const pos = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000,
+      });
+
+      console.log('Location OK:', pos);
+      this.locationGranted = true;
     } catch (err) {
-      console.error('Error requesting location permission', err);
+      console.error('Location permission error:', err);
       this.locationGranted = false;
     }
   }
@@ -86,7 +117,6 @@ export class PermissionsPage implements OnInit {
 
       console.log('Camera permission granted');
       this.cameraGranted = true;
-
     } catch (err) {
       console.error('Error requesting camera permission', err);
       this.cameraGranted = false;

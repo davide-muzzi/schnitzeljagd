@@ -2,12 +2,13 @@
   <div class="bg-pulse"></div>
 
   <div class="page">
-
     <!-- HEADER -->
     <div class="header">
       <div class="header-left">
         <p class="hello">Hey, Dave 👋</p>
-        <h1>Challenge {{ currentIndex + 1 }}/{{ challenges.length || "Error" }}</h1>
+        <h1>
+          Challenge {{ currentIndex + 1 }}/{{ challenges.length || "Error" }}
+        </h1>
       </div>
 
       <button class="close-btn" (click)="abort()">
@@ -37,18 +38,15 @@
     </div>
 
     <!-- DISTANCE -->
-    <div class="distance-info">
-      Noch <strong>137 m</strong> entfernt
-    </div>
+    <div class="distance-info">Noch <strong>137 m</strong> entfernt</div>
 
     <!-- TITLE -->
-    <h2 class="title">
-      {{ currentChallenge?.title || 'Standort finden' }}
-    </h2>
+    <h2 class="title">{{ currentChallenge?.title || 'Standort finden' }}</h2>
 
     <!-- DESCRIPTION (FALLBACK ADDED) -->
     <p class="description">
-      {{ currentChallenge?.intro || 'Begib dich zum vorgegebenen Standort. Finde den Ort mit den Koordinaten.' }}
+      {{ currentChallenge?.intro || 'Begib dich zum vorgegebenen Standort. Finde
+      den Ort mit den Koordinaten.' }}
     </p>
 
     <!-- STATS -->
@@ -73,9 +71,6 @@
     </button>
 
     <!-- SKIP -->
-    <button class="skip-btn">
-      Challenge überspringen
-    </button>
-
+    <button class="skip-btn">Challenge überspringen</button>
   </div>
 </ion-content>
