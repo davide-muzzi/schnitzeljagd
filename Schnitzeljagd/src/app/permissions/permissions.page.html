@@ -35,8 +35,8 @@
         Standort erlauben
       </button>
 
-      <div class="perm-granted">
-        <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
+      <div class="perm-granted" *ngIf="locationGranted">
+        <img src="../assets/icons/checkmark_green.svg" alt="Granted"/>
         <span>Berechtigung erteilt</span>
       </div>
     </div>
@@ -60,7 +60,7 @@
         Kamera erlauben
       </button>
 
-      <div class="perm-granted">
+      <div class="perm-granted" *ngIf="cameraGranted">
         <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
         <span>Berechtigung erteilt</span>
       </div>
@@ -68,7 +68,7 @@
 
     <!-- Continue -->
     <!-- add class "active" later -->
-   <button class="continue-btn" 
+<button class="continue-btn" 
         (click)="startgame()" 
         [disabled]="!locationGranted || !cameraGranted"
         [class.active]="locationGranted && cameraGranted">

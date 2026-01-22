@@ -31,7 +31,7 @@ export class PermissionsPage implements OnInit {
   }
 
   startgame() {
-    if (!this.locationGranted || !this.cameraGranted || !this.playerName.trim()) return;
+    if (!this.locationGranted || !this.cameraGranted) return;
 
     this.gameService.start(this.playerName.trim()).then(() => {
       this.router.navigate(['/challenge']);
@@ -43,14 +43,15 @@ export class PermissionsPage implements OnInit {
   async locationperm() {
     try {
       let perm = await Geolocation.checkPermissions();
+      console.log('Current permission status:', perm);
 
       if (perm.location !== 'granted') {
-        perm = await Geolocation.requestPermissions({
-          permissions: ['location']
-        });
+        const request = await Geolocation.requestPermissions();
+        perm = request;
+        console.log('Permission after request:', perm);
       }
 
-      if (perm.location === 'granted') {
+      if (perm.location === 'granted' || Capacitor.getPlatform() === 'android') {
         const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy: true });
         console.log('Location granted, position:', pos);
         this.locationGranted = true;
@@ -95,6 +96,7 @@ export class PermissionsPage implements OnInit {
   ngOnInit() {
     this.route.queryParams.subscribe((params: { [key: string]: string }) => {
       this.playerName = params['player'] || '';
+      console.log('Player name received:', this.playerName);
     });
   }
 }
