@@ -53,6 +53,27 @@ export class PermissionsPage implements OnInit {
 
   async locationperm() {
     try {
+      if (!Capacitor.isNativePlatform()) {
+      if (!('geolocation' in navigator)) {
+        console.error('Geolocation not supported');
+        this.locationGranted = false;
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        () => {
+          this.locationGranted = true;
+        },
+        (err) => {
+          console.error('Browser geolocation denied', err);
+          this.locationGranted = false;
+        },
+        { enableHighAccuracy: true }
+      );
+
+      return;
+    }
+
       let perm = await Geolocation.checkPermissions();
       console.log('Current permission status:', perm);
 
