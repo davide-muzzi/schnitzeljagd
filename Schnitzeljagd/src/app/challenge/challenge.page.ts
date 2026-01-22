@@ -77,7 +77,7 @@ export class ChallengePage implements OnInit, OnDestroy {
   // -------------------- LIFECYCLE --------------------
 
   ngOnInit(): void {
-    const DEV_BYPASS = true;
+    const DEV_BYPASS = false;
 
     if (!this.game.activeRun && !DEV_BYPASS) {
       this.router.navigateByUrl('/home');
@@ -282,7 +282,7 @@ export class ChallengePage implements OnInit, OnDestroy {
             this.targetLat = generated.targetLatitude;
             this.targetLng = generated.targetLongitude;
 
-            // show coordinates to user (requirement)
+            // show coordinates to user
             this.currentChallenge!.intro =
               `Begib dich zu einem zufälligen Ort in deiner Nähe.\n` +
               `${this.targetLat.toFixed(5)}° N, ${this.targetLng.toFixed(5)}° E`;

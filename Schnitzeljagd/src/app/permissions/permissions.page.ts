@@ -46,17 +46,15 @@ export class PermissionsPage implements OnInit {
 
   async startGame(name: string) {
   if (!this.cameraGranted || !this.locationGranted) {
+    console.warn('Cannot start game, permissions not granted');
     return;
+    }
+
+    await this.gameService.start();
+    console.log('Game started for:', name);
+
+    this.router.navigate(['/challenge']);
   }
-
-  await this.gameService.start();
-  console.log('Game started for:', name);
-
-  this.router.navigate(['/challenge']);
-}
-
-
-
 
   async locationperm() {
     try {
@@ -77,7 +75,7 @@ export class PermissionsPage implements OnInit {
         },
         { enableHighAccuracy: true }
       );
-
+      console.log('Location permission handled by browser');
       return;
     }
 
@@ -131,7 +129,6 @@ export class PermissionsPage implements OnInit {
       this.cameraGranted = false;
     }
   }
-
 
   ngOnInit() {
     this.gameService.activeRunObs.subscribe(run => {

@@ -45,11 +45,4 @@ export class HomePage {
       }
     }
   ];
-
-
-
-  async startGame(name: string) {
-    await this.gameService.start();
-    console.log('Game started for:', name);
-  }
 }
