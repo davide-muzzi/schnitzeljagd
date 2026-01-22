@@ -35,8 +35,10 @@ export class GameService {
   async start(): Promise<void> {
     const now = Date.now();
 
+    const name = this.getPlayerName() || 'Player';
+
     this.activeRun$.next({
-      name: 'Player',
+      name,
       startedAt: now,
       challengeStartedAt: now,
       startLat: undefined,
@@ -176,5 +178,17 @@ export class GameService {
         potatoAfterSeconds: 180,
       },
     ];
+  }
+
+
+
+  private playerName = '';
+
+  setPlayerName(name: string) {
+    this.playerName = name;
+  }
+
+  getPlayerName(): string {
+    return this.playerName;
   }
 }
