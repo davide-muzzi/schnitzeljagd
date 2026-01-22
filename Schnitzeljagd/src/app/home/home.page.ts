@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { GameService } from '../services/game';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonAlert } from '@ionic/angular/standalone';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-home',
@@ -11,7 +13,7 @@ import { IonHeader, IonToolbar, IonTitle, IonContent, IonAlert } from '@ionic/an
 export class HomePage {
 
 
-  constructor(private gameService: GameService) { }
+  constructor(private gameService: GameService, private router: Router) { }
 
   public startButton = [
     {
@@ -25,7 +27,7 @@ export class HomePage {
         const name = data.name?.trim();
         if (!name) return false;
 
-        this.startGame(name);
+        this.router.navigate(['/permissions']);
         return true;
       }
     },
