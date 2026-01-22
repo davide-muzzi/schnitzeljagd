@@ -1,0 +1,266 @@
+.result-page {
+  --background: none;
+  background:
+    radial-gradient(
+      circle at top center,
+      rgba(0, 200, 170, 0.25),
+      transparent 45%
+    ),
+    linear-gradient(180deg, #071a1f 0%, #050914 60%, #04060d 100%);
+  color: #fff;
+}
+
+.page {
+  padding: 32px 20px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* =========================
+   TROPHY + STAR
+========================= */
+
+.trophy-wrapper {
+  position: relative;
+  margin-top: 12px;
+}
+
+.trophy-circle {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22e0b7, #00bfa5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trophy-icon {
+  width: 56px;
+  height: 56px;
+}
+
+.star-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffb400, #ff7e00);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 2.2s ease-in-out infinite;
+}
+
+.star-badge img {
+  width: 18px;
+  height: 18px;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* =========================
+   TEXT
+========================= */
+
+.title {
+  font-size: 32px;
+  font-weight: 800;
+  margin-top: 12px;
+}
+
+.subtitle {
+  font-size: 15px;
+  opacity: 0.85;
+}
+
+/* =========================
+   SHARED CONTAINER STYLE
+========================= */
+
+.points-card,
+.stat-card,
+.breakdown {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* =========================
+   POINTS CARD
+========================= */
+
+.points-card {
+  width: 100%;
+  max-width: 360px;
+  background: linear-gradient(
+    145deg,
+    rgba(0, 180, 150, 0.18),
+    rgba(0, 0, 0, 0.45)
+  );
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 8px;
+}
+
+.points-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+.trend-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.points-value {
+  font-size: 44px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.points-value span {
+  font-size: 16px;
+  font-weight: 600;
+  color: #22e0b7;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 14px 12px;
+  text-align: center;
+}
+
+.emoji {
+  font-size: 20px;
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+/* =========================
+   BONUS / MALUS
+========================= */
+
+.breakdown {
+  width: 100%;
+  max-width: 360px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  padding: 18px 16px;
+}
+
+.breakdown .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.breakdown .row + .row {
+  margin-top: 14px;
+}
+
+.plus {
+  color: #22e0b7;
+}
+
+.minus {
+  color: #ff6b6b;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.primary-btn,
+.secondary-btn {
+  width: 100%;
+  max-width: 360px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.primary-btn img,
+.secondary-btn img {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ZUM LEADERBOARD */
+.primary-btn {
+  margin-top: 20px;
+  height: 62px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #22e0b7, #00bfa5);
+  border: none;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.25s ease;
+  box-shadow: 0 0 52px rgba(34, 224, 183, 0.35);
+}
+
+.primary-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 0 30px rgba(34, 224, 183, 0.55);
+}
+
+/* ZUR STARTSEITE */
+.secondary-btn {
+  margin-top: 8px;
+  height: 56px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-size: 15px;
+  opacity: 0.85;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+}
