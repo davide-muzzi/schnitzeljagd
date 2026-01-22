@@ -62,36 +62,30 @@ export class PermissionsPage implements OnInit {
 
   async locationperm() {
     try {
-      // 1. Check current permissions
       let perm = await Geolocation.checkPermissions();
-      console.log('Current location permission:', perm);
+      console.log('Current permission status:', perm);
 
-      // 2. Request if not granted at all
-      if (perm.location !== 'granted' && perm.coarseLocation !== 'granted') {
-        perm = await Geolocation.requestPermissions();
+      if (perm.location !== 'granted') {
+        const request = await Geolocation.requestPermissions();
+        perm = request;
         console.log('Permission after request:', perm);
       }
 
-      // 3. Re-check final state (Android-safe)
-      const granted =
-        perm.location === 'granted' || perm.coarseLocation === 'granted';
-
-      if (!granted) {
+      if (
+        perm.location === 'granted' ||
+        Capacitor.getPlatform() === 'android'
+      ) {
+        const pos = await Geolocation.getCurrentPosition({
+          enableHighAccuracy: true,
+        });
+        console.log('Location granted, position:', pos);
+        this.locationGranted = true;
+      } else {
         console.warn('Location permission denied');
         this.locationGranted = false;
-        return;
       }
-
-      // 4. Permission is valid --> test GPS access
-      const pos = await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 10000,
-      });
-
-      console.log('Location OK:', pos);
-      this.locationGranted = true;
     } catch (err) {
-      console.error('Location permission error:', err);
+      console.error('Error requesting location permission', err);
       this.locationGranted = false;
     }
   }
