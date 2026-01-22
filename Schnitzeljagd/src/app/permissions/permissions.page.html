@@ -28,18 +28,21 @@
         navigieren und deine zurückgelegte Distanz zu messen.
       </p>
 
-      <button
-        *ngIf="!locationGranted"
+      @if (!locationGranted) {
+        <button
         class="perm-action location"
         (click)="locationperm()"
-      >
+        >
         Standort erlauben
       </button>
+    }
 
-      <div class="perm-granted" *ngIf="locationGranted">
+    @if (locationGranted) {
+      <div class="perm-granted">
         <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
         <span>Berechtigung erteilt</span>
       </div>
+    }
     </div>
 
     <!-- Kamera -->
@@ -57,18 +60,21 @@
         Challenges zu erfüllen.
       </p>
 
-      <button
-        *ngIf="!cameraGranted"
+      @if(!cameraGranted) { 
+        <button
         class="perm-action camera"
         (click)="cameraperm()"
-      >
+        >
         Kamera erlauben
       </button>
+    }
 
-      <div class="perm-granted" *ngIf="cameraGranted">
-        <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
-        <span>Berechtigung erteilt</span>
-      </div>
+      @if(cameraGranted) {
+        <div class="perm-granted">
+          <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
+          <span>Berechtigung erteilt</span>
+        </div>
+      }
     </div>
 
     <!-- Continue -->

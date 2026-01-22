@@ -14,6 +14,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 import { ActiveRun } from '../models/active-run';
 import { ActivatedRoute } from '@angular/router';
+import { Camera } from '@capacitor/camera';
 
 @Component({
   selector: 'app-permissions',
@@ -39,7 +40,7 @@ export class PermissionsPage implements OnInit {
     private gameService: GameService,
     private router: Router,
     private route: ActivatedRoute,
-  ) {}
+  ) { }
 
   abort() {
     console.log('Game aborted');
@@ -72,13 +73,8 @@ export class PermissionsPage implements OnInit {
       }
 
       if (
-        perm.location === 'granted' ||
-        Capacitor.getPlatform() === 'android'
+        perm.location === 'granted'
       ) {
-        const pos = await Geolocation.getCurrentPosition({
-          enableHighAccuracy: true,
-        });
-        console.log('Location granted, position:', pos);
         this.locationGranted = true;
       } else {
         console.warn('Location permission denied');
@@ -98,15 +94,16 @@ export class PermissionsPage implements OnInit {
         return;
       }
 
-      const perm = await BarcodeScanner.checkPermissions();
+      const perm = await Camera.checkPermissions();
 
       if (perm.camera !== 'granted') {
-        const request = await BarcodeScanner.requestPermissions();
+        const request = await Camera.requestPermissions();
         if (request.camera !== 'granted') {
           console.warn('Camera permission denied');
           this.cameraGranted = false;
           return;
         }
+        this.cameraGranted = true;
       }
 
       console.log('Camera permission granted');
