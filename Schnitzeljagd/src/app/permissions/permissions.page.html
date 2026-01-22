@@ -1,6 +1,5 @@
 <ion-content class="permissions-page">
   <div class="page">
-
     <!-- Back button (icon) -->
     <button class="back-btn" (click)="abort()" [routerLink]="['/home']">
       <img src="../assets/icons/arrow_left.svg" alt="Back" />
@@ -11,9 +10,7 @@
       <div class="header-icon">🔐</div>
 
       <h1>Berechtigungen</h1>
-      <p>
-        Hey Dave! Für die Jagd benötigen wir:
-      </p>
+      <p>Hey Dave! Für die Jagd benötigen wir:</p>
     </div>
 
     <!-- Standort -->
@@ -27,16 +24,20 @@
       </div>
 
       <p class="perm-desc">
-        Wir benötigen deinen Standort, um dich zu den Challenge-Orten
-        zu navigieren und deine zurückgelegte Distanz zu messen.
+        Wir benötigen deinen Standort, um dich zu den Challenge-Orten zu
+        navigieren und deine zurückgelegte Distanz zu messen.
       </p>
 
-      <button class="perm-action location" (click)="locationperm()">
+      <button
+        *ngIf="!locationGranted"
+        class="perm-action location"
+        (click)="locationperm()"
+      >
         Standort erlauben
       </button>
 
       <div class="perm-granted" *ngIf="locationGranted">
-        <img src="../assets/icons/checkmark_green.svg" alt="Granted"/>
+        <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
         <span>Berechtigung erteilt</span>
       </div>
     </div>
@@ -56,7 +57,11 @@
         Challenges zu erfüllen.
       </p>
 
-      <button class="perm-action camera" (click)="cameraperm()">
+      <button
+        *ngIf="!cameraGranted"
+        class="perm-action camera"
+        (click)="cameraperm()"
+      >
         Kamera erlauben
       </button>
 
@@ -68,12 +73,13 @@
 
     <!-- Continue -->
     <!-- add class "active" later -->
-<button class="continue-btn" 
-        (click)="startgame()" 
-        [disabled]="!locationGranted || !cameraGranted"
-        [class.active]="locationGranted && cameraGranted">
-  Jagd beginnen! 🎯
-</button>
-
+    <button
+      class="continue-btn"
+      (click)="startgame()"
+      [disabled]="!locationGranted || !cameraGranted"
+      [class.active]="locationGranted && cameraGranted"
+    >
+      Jagd beginnen! 🎯
+    </button>
   </div>
 </ion-content>
