@@ -27,7 +27,7 @@ export class HomePage {
         const name = data.name?.trim();
         if (!name) return false;
 
-        this.router.navigate(['/permissions']);
+        this.router.navigate(['/permissions'], { queryParams: { player: name } });
         return true;
       }
     },
