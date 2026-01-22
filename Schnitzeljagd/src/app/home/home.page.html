@@ -1,6 +1,5 @@
 <ion-content class="home">
   <div class="page">
-
     <!-- HERO -->
     <div class="hero">
       <div class="app-icon">🥩</div>
@@ -10,19 +9,13 @@
         <span>Jagd</span>
       </h1>
 
-      <p class="subtitle">
-        ✨ 6 Challenges · Unendlicher Spass ✨
-      </p>
+      <p class="subtitle">✨ 6 Challenges · Unendlicher Spass ✨</p>
     </div>
 
     <!-- LEADERBOARD -->
     <div class="card leaderboard">
       <div class="card-title">
-        <img
-          src="../assets/icons/crown.svg"
-          alt="Crown"
-          class="icon"
-        />
+        <img src="../assets/icons/crown_yellow.svg" alt="Crown" class="icon" />
         <span>Top Jäger</span>
       </div>
 
@@ -30,10 +23,7 @@
         <div class="avatar">
           👩‍🦰
           <div class="trophy-badge">
-            <img
-              src="../assets/icons/trophy.svg"
-              alt="Trophy"
-            />
+            <img src="../assets/icons/trophy.svg" alt="Trophy" />
           </div>
         </div>
 
@@ -102,17 +92,15 @@
         Jagd starten
         <span class="arrow">➜</span>
       </button>
-      <ion-alert  
-  trigger="present-alert"
-  header="Bitte Namen eingeben"
-  [buttons]="startButton"
-  [inputs]="startInput">
-</ion-alert>
+      <ion-alert
+        trigger="present-alert"
+        header="Bitte Namen eingeben"
+        [buttons]="startButton"
+        [inputs]="startInput"
+      >
+      </ion-alert>
 
-      <p class="hint">
-        6 spannende Aufgaben warten auf dich!
-      </p>
+      <p class="hint">6 spannende Aufgaben warten auf dich!</p>
     </div>
-
   </div>
 </ion-content>
