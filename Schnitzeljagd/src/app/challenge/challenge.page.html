@@ -9,6 +9,7 @@
         <h1>
           Challenge {{ currentIndex + 1 }}/{{ challenges.length || "Error" }}
         </h1>
+        <p class="timer">{{ formattedTime }}</p>
       </div>
 
       <button class="close-btn" (click)="abort()">
@@ -25,20 +26,31 @@
     </div>
 
     <!-- CHALLENGE ICON -->
-    <div class="challenge-icon">
+    <div class="challenge-icon" [class.reached]="isDone">
       <div class="status-badge">
-        <img src="../assets/icons/lightning_bolt_white.svg" alt="Active" />
+        <img
+          [src]="isDone ? '../assets/icons/checkmark_white.svg' : '../assets/icons/lightning_bolt_white.svg'"
+          [alt]="isDone ? 'Done' : 'Active'"
+        />
       </div>
 
       <img
-        src="../assets/icons/pin.svg"
+        [src]="
+    currentChallenge?.id === 'geo_target' ? '../assets/icons/pin.svg' :
+    currentChallenge?.id === 'distance'   ? '../assets/icons/footsteps.svg' :
+    currentChallenge?.id === 'qr'         ? '../assets/icons/qr.svg' :
+    currentChallenge?.id === 'sensor'     ? '../assets/icons/rotate.svg' :
+    currentChallenge?.id === 'charging'   ? '../assets/icons/battery.svg' :
+    currentChallenge?.id === 'wifi'       ? '../assets/icons/wifi.svg' :
+    '../assets/icons/pin.svg'
+  "
         alt="Challenge Icon"
         class="main-icon"
       />
     </div>
 
-    <!-- DISTANCE -->
-    <div class="distance-info">Noch <strong>137 m</strong> entfernt</div>
+    <!-- STATUS / DISTANCE -->
+    <div class="distance-info" *ngIf="statusText">{{ statusText }}</div>
 
     <!-- TITLE -->
     <h2 class="title">{{ currentChallenge?.title || 'Standort finden' }}</h2>
@@ -65,12 +77,25 @@
     </div>
 
     <!-- PRIMARY ACTION -->
-    <button class="primary-btn">
-      <img src="../assets/icons/checkmark_white.svg" alt="Check" />
-      Challenge abschließen
+    <button
+      class="primary-btn"
+      (click)="isDone ? nextChallenge() : primaryAction()"
+      [disabled]="!isDone && (currentChallenge?.id === 'geo_target' || currentChallenge?.id === 'distance')"
+    >
+      <img
+        [src]="isDone ? '../assets/icons/checkmark_white.svg' : '../assets/icons/checkmark_white.svg'"
+        alt="Action"
+      />
+
+      {{ isDone ? 'Challenge abschliessen' : (currentChallenge?.id === 'qr' ?
+      'QR-Code scannen' : (currentChallenge?.id === 'geo_target' ||
+      currentChallenge?.id === 'distance' ? 'Challenge abschliessen' : 'Aufgabe
+      prüfen')) }}
     </button>
 
     <!-- SKIP -->
-    <button class="skip-btn">Challenge überspringen</button>
+    <button class="skip-btn" (click)="skipChallenge()">
+      Challenge überspringen
+    </button>
   </div>
 </ion-content>

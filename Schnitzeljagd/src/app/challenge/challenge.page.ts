@@ -40,6 +40,22 @@ import { Challenge } from '../models/challenge';
 })
 export class ChallengePage implements OnInit, OnDestroy {
   // -------------------- RUNTIME STATE --------------------
+  private timerInterval?: any;
+  elapsedSeconds = 0;
+
+  // GEO CHALLENGE STATE
+  private geoInterval?: any;
+
+  targetLat?: number;
+  targetLng?: number;
+
+  currentDistanceMeters?: number;
+
+  private distanceStartLat?: number;
+  private distanceStartLng?: number;
+
+  private walkedDistanceMeters = 0;
+  private readonly distanceGoalMeters = 20;
 
   statusText = '';
   isDone = false;
@@ -68,15 +84,36 @@ export class ChallengePage implements OnInit, OnDestroy {
       return;
     }
 
+    this.timerInterval = setInterval(() => {
+      this.elapsedSeconds++;
+    }, 1000);
+
     this.resetChallenge();
   }
 
   ngOnDestroy(): void {
     this.cleanup();
+
+    if (this.timerInterval) {
+      clearInterval(this.timerInterval);
+      this.timerInterval = undefined;
+    }
+
+    this.distanceStartLat = undefined;
+    this.distanceStartLng = undefined;
+    this.walkedDistanceMeters = 0;
   }
 
   // -------------------- TEMPLATE GETTERS --------------------
   // (HTML binds ONLY to these)
+
+  get formattedTime(): string {
+    const minutes = Math.floor(this.elapsedSeconds / 60)
+      .toString()
+      .padStart(2, '0');
+    const seconds = (this.elapsedSeconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${seconds}`;
+  }
 
   get gameRun() {
     return this.game.activeRun;
@@ -170,10 +207,19 @@ export class ChallengePage implements OnInit, OnDestroy {
   }
 
   private cleanup(): void {
+    if (this.geoInterval) {
+      clearInterval(this.geoInterval);
+      this.geoInterval = undefined;
+    }
+    this.targetLat = undefined;
+    this.targetLng = undefined;
+    this.currentDistanceMeters = undefined;
+
     if (this.geoWatchId) {
       Geolocation.clearWatch({ id: this.geoWatchId });
       this.geoWatchId = null;
     }
+
     if (this.networkListener) {
       this.networkListener.remove();
       this.networkListener = null;
@@ -181,10 +227,90 @@ export class ChallengePage implements OnInit, OnDestroy {
   }
 
   // -------------------- GEO + DISTANCE --------------------
+  private generateRandomTargetWithinRadius(
+    startLatitude: number,
+    startLongitude: number,
+    maxDistanceMeters: number = 2000,
+  ): { targetLatitude: number; targetLongitude: number } {
+    const metersPerDegreeLatitude = 111_000;
+    const maxDistanceDegrees = maxDistanceMeters / metersPerDegreeLatitude;
+
+    const randomRadiusFactor = Math.random();
+    const randomAngleFactor = Math.random();
+
+    const randomDistanceFromCenter =
+      maxDistanceDegrees * Math.sqrt(randomRadiusFactor);
+    const randomAngleRadians = 2 * Math.PI * randomAngleFactor;
+
+    const latitudeOffset =
+      randomDistanceFromCenter * Math.cos(randomAngleRadians);
+    const longitudeOffset =
+      (randomDistanceFromCenter * Math.sin(randomAngleRadians)) /
+      Math.cos((startLatitude * Math.PI) / 180);
+
+    return {
+      targetLatitude: startLatitude + latitudeOffset,
+      targetLongitude: startLongitude + longitudeOffset,
+    };
+  }
 
   private async startGeoTracking(ch: Challenge): Promise<void> {
     let lastLat: number | null = null;
     let lastLng: number | null = null;
+
+    if (ch.id === 'geo_target') {
+      this.geoInterval = setInterval(async () => {
+        if (this.isDone) return;
+
+        try {
+          const pos = await Geolocation.getCurrentPosition({
+            enableHighAccuracy: true,
+            timeout: 10000,
+          });
+
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+
+          // generate random target once
+          if (this.targetLat === undefined || this.targetLng === undefined) {
+            const generated = this.generateRandomTargetWithinRadius(
+              lat,
+              lng,
+              2000,
+            );
+
+            this.targetLat = generated.targetLatitude;
+            this.targetLng = generated.targetLongitude;
+
+            // show coordinates to user (requirement)
+            this.currentChallenge!.intro =
+              `Begib dich zu einem zufälligen Ort in deiner Nähe.\n` +
+              `${this.targetLat.toFixed(5)}° N, ${this.targetLng.toFixed(5)}° E`;
+          }
+
+          const distanceToTarget = this.distance(
+            lat,
+            lng,
+            this.targetLat,
+            this.targetLng,
+          );
+
+          this.currentDistanceMeters = Math.round(distanceToTarget);
+
+          if (distanceToTarget <= 25) {
+            this.isDone = true;
+            this.statusText = 'Standort gefunden';
+          } else {
+            this.statusText = `Noch ${this.currentDistanceMeters} m`;
+          }
+        } catch (err: any) {
+          // ignore GPS timeouts (very common indoors / browser)
+          if (err?.code !== 3) {
+            console.error(err);
+          }
+        }
+      }, 1000);
+    }
 
     this.geoWatchId = await Geolocation.watchPosition(
       { enableHighAccuracy: true },
@@ -194,34 +320,69 @@ export class ChallengePage implements OnInit, OnDestroy {
         const lat = pos.coords.latitude;
         const lng = pos.coords.longitude;
 
+        /* ───────────── Challenge 1: GEO TARGET ───────────── */
         if (ch.id === 'geo_target') {
-          const { lat: tLat, lng: tLng, radiusM } = ch.config!;
-          const d = this.distance(lat, lng, tLat, tLng);
+          if (this.targetLat === undefined || this.targetLng === undefined) {
+            const generated = this.generateRandomTargetWithinRadius(
+              lat,
+              lng,
+              2000,
+            );
 
-          this.statusText = `Noch ${Math.round(d)} m`;
+            this.targetLat = generated.targetLatitude;
+            this.targetLng = generated.targetLongitude;
 
-          if (d <= radiusM) {
+            this.currentChallenge!.intro =
+              'Begib dich zu einem zufälligen Ort in deiner Nähe.\n' +
+              `${this.targetLat.toFixed(5)}° N, ${this.targetLng.toFixed(5)}° E`;
+          }
+
+          const distanceToTarget = this.distance(
+            lat,
+            lng,
+            this.targetLat,
+            this.targetLng,
+          );
+
+          this.currentDistanceMeters = Math.round(distanceToTarget);
+
+          if (distanceToTarget <= 25) {
             this.isDone = true;
-            this.statusText = '✅ Ziel erreicht!';
+            this.statusText = 'Standort gefunden';
+          } else {
+            this.statusText = `Noch ${this.currentDistanceMeters} m`;
           }
         }
 
+        /* ───────────── Challenge 2: WALK DISTANCE ───────────── */
         if (ch.id === 'distance') {
-          if (lastLat !== null && lastLng !== null) {
-            const step = this.distance(lat, lng, lastLat, lastLng);
-            this.walkedMeters += step;
-
-            const goal = ch.config!['goalM'] as number;
-            this.statusText = `${Math.floor(this.walkedMeters)} m / ${goal} m`;
-
-            if (this.walkedMeters >= goal) {
-              this.isDone = true;
-              this.statusText = '✅ Distanz erreicht!';
-            }
+          if (
+            this.distanceStartLat === undefined ||
+            this.distanceStartLng === undefined
+          ) {
+            this.distanceStartLat = lat;
+            this.distanceStartLng = lng;
+            this.walkedDistanceMeters = 0;
           }
 
-          lastLat = lat;
-          lastLng = lng;
+          const walked = this.distance(
+            this.distanceStartLat,
+            this.distanceStartLng,
+            lat,
+            lng,
+          );
+
+          this.walkedDistanceMeters = Math.round(walked);
+
+          const goal = (ch.config?.['goalM'] as number) ?? 20;
+          const remaining = Math.max(goal - this.walkedDistanceMeters, 0);
+
+          if (remaining <= 0) {
+            this.isDone = true;
+            this.statusText = 'Distanz erreicht';
+          } else {
+            this.statusText = `Noch ${remaining} m`;
+          }
         }
       },
     );
