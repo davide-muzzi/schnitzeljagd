@@ -98,10 +98,16 @@
 
     <!-- START -->
     <div class="start-wrapper">
-      <button class="start-btn">
+      <button class="start-btn" id="present-alert">
         Jagd starten
         <span class="arrow">➜</span>
       </button>
+      <ion-alert  
+  trigger="present-alert"
+  header="Bitte Namen eingeben"
+  [buttons]="startButton"
+  [inputs]="startInput">
+</ion-alert>
 
       <p class="hint">
         6 spannende Aufgaben warten auf dich!

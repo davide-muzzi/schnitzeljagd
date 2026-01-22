@@ -13,7 +13,7 @@ export class HomePage {
 
   constructor(private gameService: GameService) { }
 
-  public startButtons = [
+  public startButton = [
     {
       text: 'Cancel',
       role: 'cancel',
@@ -31,7 +31,7 @@ export class HomePage {
     },
   ];
 
-  public startInputs = [
+  public startInput = [
     {
       name: 'name',
       type: 'text',
