@@ -1,13 +1,155 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>leaderboard</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="leaderboard-page">
+  <!-- FIXED HEADER -->
+  <div class="header">
+    <button class="back-btn">
+      <img src="../assets/icons/arrow_left.svg" alt="Back" />
+    </button>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">leaderboard</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <div class="header-stack">
+      <div class="header-icon">
+        <img src="../assets/icons/crown_white.svg" alt="Crown" />
+      </div>
+
+      <h1>Leaderboard</h1>
+      <p class="subtitle">Die besten Schnitzel-Jäger</p>
+    </div>
+  </div>
+
+  <!-- SCROLLABLE CONTENT -->
+  <div class="content">
+    <!-- HALL OF FAME -->
+    <div class="section-title hall">
+      <img src="../assets/icons/lightning_bolt_yellow.svg" alt="Hall" />
+      Hall of Fame
+    </div>
+
+    <!-- #1 -->
+    <div class="podium-card podium-1">
+      <div class="podium-left left-gold">
+        <img src="../assets/icons/trophy.svg" alt="Trophy" />
+      </div>
+
+      <div class="podium-mid">
+        <div class="podium-name">
+          Anna Schaber
+          <img
+            src="../assets/icons/crown_yellow.svg"
+            class="mini-crown"
+            alt="Crown"
+          />
+        </div>
+        <div class="podium-meta">🍖 6 &nbsp; 🥔 1 &nbsp; ⏱️ 08:45</div>
+      </div>
+
+      <div class="podium-right">
+        <div class="podium-points">480</div>
+        <div class="podium-label">Punkte</div>
+      </div>
+    </div>
+
+    <!-- #2 -->
+    <div class="podium-card podium-2">
+      <div class="podium-left left-silver">
+        <img src="../assets/icons/medal.svg" alt="Medal" />
+      </div>
+
+      <div class="podium-mid">
+        <div class="podium-name">Max Müller</div>
+        <div class="podium-meta">🍖 6 &nbsp; 🥔 2 &nbsp; ⏱️ 10:23</div>
+      </div>
+
+      <div class="podium-right">
+        <div class="podium-points">460</div>
+        <div class="podium-label">Punkte</div>
+      </div>
+    </div>
+
+    <!-- #3 -->
+    <div class="podium-card podium-3">
+      <div class="podium-left left-bronze">
+        <img src="../assets/icons/medal.svg" alt="Medal" />
+      </div>
+
+      <div class="podium-mid">
+        <div class="podium-name">Lisa Weber</div>
+        <div class="podium-meta">🍖 6 &nbsp; 🥔 4 &nbsp; ⏱️ 12:15</div>
+      </div>
+
+      <div class="podium-right">
+        <div class="podium-points">440</div>
+        <div class="podium-label">Punkte</div>
+      </div>
+    </div>
+
+    <!-- MORE RANKINGS -->
+    <div class="section-title purple">
+      <img src="../assets/icons/trending_up_purple.svg" alt="Trending" />
+      Weitere Rankings
+    </div>
+
+    <!-- #4–#10 -->
+    <div class="rank-card">
+      <div class="rank">#4</div>
+      <div class="rank-mid">
+        <div class="rank-name">Tom Fischer</div>
+        <div class="rank-meta">🍖 5 &nbsp; 🥔 3 &nbsp; 18.01.2026</div>
+      </div>
+      <div class="rank-right">
+        <div class="rank-points">420</div>
+        <div class="rank-label">Punkte</div>
+      </div>
+    </div>
+
+    <div class="rank-card">
+      <div class="rank">#5</div>
+      <div class="rank-mid">
+        <div class="rank-name">Sarah Klein</div>
+        <div class="rank-meta">🍖 5 &nbsp; 🥔 5 &nbsp; 17.01.2026</div>
+      </div>
+      <div class="rank-right">
+        <div class="rank-points">400</div>
+        <div class="rank-label">Punkte</div>
+      </div>
+    </div>
+
+    <div class="rank-card">
+      <div class="rank">#6</div>
+      <div class="rank-mid">
+        <div class="rank-name">Peter Bauer</div>
+        <div class="rank-meta">🍖 4 &nbsp; 🥔 2 &nbsp; 17.01.2026</div>
+      </div>
+      <div class="rank-right">
+        <div class="rank-points">380</div>
+        <div class="rank-label">Punkte</div>
+      </div>
+    </div>
+
+    <div class="rank-card">
+      <div class="rank">#7</div>
+      <div class="rank-mid">
+        <div class="rank-name">Julia Hoffmann</div>
+        <div class="rank-meta">🍖 4 &nbsp; 🥔 4 &nbsp; 16.01.2026</div>
+      </div>
+      <div class="rank-right">
+        <div class="rank-points">360</div>
+        <div class="rank-label">Punkte</div>
+      </div>
+    </div>
+
+    <!-- ALL RUNS (HISTORY) -->
+    <div class="history">
+      <div class="history-title">Alle Durchläufe</div>
+      <div class="history-item">Tom Fischer — 18.01.2026 — 420 pts</div>
+      <div class="history-item">Sarah Klein — 17.01.2026 — 400 pts</div>
+      <div class="history-item">Peter Bauer — 17.01.2026 — 380 pts</div>
+      <div class="history-item">Julia Hoffmann — 16.01.2026 — 360 pts</div>
+    </div>
+
+    <!-- AVERAGE -->
+    <div class="average-card">
+      <div class="avg-title">Durchschnittliche Punktzahl</div>
+      <div class="avg-value">420</div>
+      <div class="avg-sub">Basierend auf 7 Durchläufen</div>
+    </div>
+  </div>
 </ion-content>
