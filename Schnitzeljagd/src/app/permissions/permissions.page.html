@@ -28,21 +28,17 @@
         navigieren und deine zurückgelegte Distanz zu messen.
       </p>
 
-      @if (!locationGranted) {
-        <button
-        class="perm-action location"
-        (click)="locationperm()"
-        >
+ <button *ngIf="!locationGranted"
+              class="perm-action location"
+              (click)="locationperm()">
         Standort erlauben
       </button>
-    }
 
-    @if (locationGranted) {
-      <div class="perm-granted">
+      <!-- Granted message shows only if granted -->
+      <div *ngIf="locationGranted" class="perm-granted">
         <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
         <span>Berechtigung erteilt</span>
       </div>
-    }
     </div>
 
     <!-- Kamera -->
@@ -60,31 +56,24 @@
         Challenges zu erfüllen.
       </p>
 
-      @if(!cameraGranted) { 
-        <button
-        class="perm-action camera"
-        (click)="cameraperm()"
-        >
+      <button *ngIf="!cameraGranted"
+              class="perm-action camera"
+              (click)="cameraperm()">
         Kamera erlauben
       </button>
-    }
 
-      @if(cameraGranted) {
-        <div class="perm-granted">
-          <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
-          <span>Berechtigung erteilt</span>
-        </div>
-      }
+      <div *ngIf="cameraGranted" class="perm-granted">
+        <img src="../assets/icons/checkmark_green.svg" alt="Granted" />
+        <span>Berechtigung erteilt</span>
+      </div>
     </div>
 
     <!-- Continue -->
     <!-- add class "active" later -->
-    <button
-      class="continue-btn"
-      (click)="startgame()"
-      [disabled]="!locationGranted || !cameraGranted"
-      [class.active]="locationGranted && cameraGranted"
-    >
+    <button class="continue-btn"
+            (click)="startgame()"
+            [disabled]="!cameraGranted"
+            [class.active]="cameraGranted">
       Jagd beginnen! 🎯
     </button>
   </div>
