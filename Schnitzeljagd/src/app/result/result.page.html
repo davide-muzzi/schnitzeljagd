@@ -1,13 +1,82 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>result</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="result-page">
+  <!-- subtle animated background handled in SCSS -->
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">result</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="page">
+    <!-- TROPHY + STAR -->
+    <div class="trophy-wrapper">
+      <div class="trophy-circle">
+        <img
+          src="../assets/icons/trophy.svg"
+          alt="Trophy"
+          class="trophy-icon"
+        />
+      </div>
+
+      <div class="star-badge">
+        <img src="../assets/icons/star.svg" alt="Star" />
+      </div>
+    </div>
+
+    <!-- TITLE -->
+    <h1 class="title">Glückwunsch!</h1>
+    <p class="subtitle">Dave, Mission erfolgreich! 🎉</p>
+
+    <!-- TOTAL POINTS -->
+    <div class="points-card">
+      <div class="points-header">
+        <span>Gesamtpunkte</span>
+        <img
+          src="../assets/icons/trending_up_green.svg"
+          alt="Trending"
+          class="trend-icon"
+        />
+      </div>
+
+      <div class="points-value">580 <span>Punkte</span></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="emoji">🍖</div>
+        <div class="stat-value">6</div>
+        <div class="stat-label">Schnitzel</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="emoji">🥔</div>
+        <div class="stat-value">1</div>
+        <div class="stat-label">Kartoffeln</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="emoji">⏱️</div>
+        <div class="stat-value">12:34</div>
+        <div class="stat-label">Zeit</div>
+      </div>
+    </div>
+
+    <!-- BONUS / MALUS -->
+    <div class="breakdown">
+      <div class="row">
+        <span>Schnitzel Bonus</span>
+        <span class="plus">+600</span>
+      </div>
+      <div class="row">
+        <span>Kartoffel Malus</span>
+        <span class="minus">-20</span>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <button class="primary-btn">
+      <img src="../assets/icons/podium.svg" alt="Leaderboard" />
+      Zum Leaderboard
+    </button>
+
+    <button class="secondary-btn">
+      <img src="../assets/icons/home.svg" alt="Home" />
+      Zur Startseite
+    </button>
+  </div>
 </ion-content>
