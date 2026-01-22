@@ -2,7 +2,7 @@
   <div class="page">
 
     <!-- Back button (icon) -->
-    <button class="back-btn">
+    <button class="back-btn" (click)="abort()" [routerLink]="['/home']">
       <img src="../assets/icons/arrow_left.svg" alt="Back" />
     </button>
 
@@ -31,7 +31,7 @@
         zu navigieren und deine zurückgelegte Distanz zu messen.
       </p>
 
-      <button class="perm-action location">
+      <button class="perm-action location" id="location-perm">
         Standort erlauben
       </button>
 
