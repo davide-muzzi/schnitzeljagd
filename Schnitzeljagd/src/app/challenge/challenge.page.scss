@@ -157,7 +157,7 @@
 }
 
 .stat-card {
-  background: #0F1324;
+  background: #0f1324;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 18px;
   padding: 14px;
@@ -209,6 +209,11 @@
   }
 }
 
+.primary-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 /* SKIP BUTTON */
 .skip-btn {
   margin-top: 14px;
@@ -216,7 +221,7 @@
   padding: 14px;
   border-radius: 16px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #0F1324;
+  background: #0f1324;
   color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   transition: all 0.2s ease;
