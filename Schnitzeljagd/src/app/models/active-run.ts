@@ -4,8 +4,8 @@ export interface ActiveRun {
   startedAt: number;
   challengeStartedAt: number;
 
-  startLat: number;
-  startLng: number;
+  startLat?: number;
+  startLng?: number;
 
   currentIndex: number;
   schnitzel: number;

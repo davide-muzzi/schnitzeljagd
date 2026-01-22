@@ -32,36 +32,15 @@ export class GameService {
     return this.activeRun$.value;
   }
 
-  async start(name: string): Promise<void> {
-    const pos = await Geolocation.getCurrentPosition({
-      enableHighAccuracy: true,
-    });
-
-    const perm = await BarcodeScanner.checkPermissions();
-
-    if (perm.camera !== 'granted') {
-      const request = await BarcodeScanner.requestPermissions();
-      if (request.camera !== 'granted') {
-        throw new Error('Camera permission denied');
-      }
-    }
-
-
-    const startLat = pos.coords.latitude;
-    const startLng = pos.coords.longitude;
-
-    const target = randomPointWithinRadius(startLat, startLng, 2000);
-    const distanceGoal = randomDistanceMeters(500, 1000);
-
-    this.challenges = this.buildChallenges(target, distanceGoal);
-
+  async start(): Promise<void> {
     const now = Date.now();
+
     this.activeRun$.next({
-      name,
+      name: 'Player',
       startedAt: now,
       challengeStartedAt: now,
-      startLat,
-      startLng,
+      startLat: undefined,
+      startLng: undefined,
       currentIndex: 0,
       schnitzel: 0,
       kartoffeln: 0,

@@ -49,16 +49,10 @@ export class PermissionsPage implements OnInit {
   }
 
   startgame() {
-    if (!this.locationGranted || !this.cameraGranted) return;
+    if (!this.cameraGranted) return;
 
-    this.gameService
-      .start(this.playerName.trim())
-      .then(() => {
-        this.router.navigate(['/challenge']);
-      })
-      .catch((err) => {
-        console.error('Error starting game:', err);
-      });
+    this.gameService.start();
+    this.router.navigate(['/challenge']);
   }
 
   async locationperm() {
