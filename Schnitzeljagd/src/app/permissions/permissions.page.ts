@@ -34,13 +34,9 @@ import { Camera } from '@capacitor/camera';
 export class PermissionsPage implements OnInit {
   locationGranted = false;
   cameraGranted = false;
-  playerName: string = '';
+  playerName = '';
 
-  constructor(
-    private gameService: GameService,
-    private router: Router,
-    private route: ActivatedRoute,
-  ) { }
+  constructor(public gameService: GameService, private router: Router, private route: ActivatedRoute,) { }
 
   abort() {
     console.log('Game aborted');
@@ -48,12 +44,12 @@ export class PermissionsPage implements OnInit {
     this.router.navigate(['/home']);
   }
 
-  startgame() {
-    if (!this.cameraGranted) return;
-
-    this.gameService.start();
-    this.router.navigate(['/challenge']);
+  async startGame(name: string) {
+    await this.gameService.start();
+    console.log('Game started for:', name);
   }
+
+
 
   async locationperm() {
     try {
@@ -108,10 +104,14 @@ export class PermissionsPage implements OnInit {
     }
   }
 
+
   ngOnInit() {
-    this.route.queryParams.subscribe((params: { [key: string]: string }) => {
-      this.playerName = params['player'] || '';
-      console.log('Player name received:', this.playerName);
+    this.gameService.activeRunObs.subscribe(run => {
+      if (run) {
+        this.playerName = run.name;
+      } else {
+        this.playerName = this.gameService.getPlayerName();
+      }
     });
   }
 }

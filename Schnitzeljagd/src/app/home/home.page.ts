@@ -27,10 +27,12 @@ export class HomePage {
         const name = data.name?.trim();
         if (!name) return false;
 
-        this.router.navigate(['/permissions'], { queryParams: { player: name } });
+        this.gameService.setPlayerName(name);
+
+        this.router.navigate(['/permissions']);
         return true;
       }
-    },
+    }
   ];
 
   public startInput = [
@@ -43,6 +45,8 @@ export class HomePage {
       }
     }
   ];
+
+
 
   async startGame(name: string) {
     await this.gameService.start();

@@ -10,7 +10,7 @@
       <div class="header-icon">🔐</div>
 
       <h1>Berechtigungen</h1>
-      <p>Hey Dave! Für die Jagd benötigen wir:</p>
+      <p *ngIf="playerName">Hey {{playerName}}! Für die Jagd benötigen wir:</p>    
     </div>
 
     <!-- Standort -->
@@ -70,11 +70,11 @@
 
     <!-- Continue -->
     <!-- add class "active" later -->
-    <button class="continue-btn"
-            (click)="startgame()"
-            [disabled]="!cameraGranted"
-            [class.active]="cameraGranted">
-      Jagd beginnen! 🎯
-    </button>
+<button class="continue-btn"
+        (click)="startGame(playerName)"
+        [disabled]="!cameraGranted"
+        [class.active]="cameraGranted">
+  Jagd beginnen! 🎯
+</button>
   </div>
 </ion-content>
