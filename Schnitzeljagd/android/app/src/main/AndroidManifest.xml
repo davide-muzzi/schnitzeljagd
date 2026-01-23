@@ -23,6 +23,8 @@
             </intent-filter>
 
         </activity>
+        <meta-data android:name="com.google.mlkit.vision.DEPENDENCIES" android:value="barcode_ui"/>
+        <!-- To use multiple models: android:value="face,model2,model3" -->
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -34,8 +36,23 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
     </application>
+  <uses-feature
+    android:name="android.hardware.camera"
+    android:required="false" />
 
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-feature android:name="android.hardware.location.gps" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature
+    android:name="android.hardware.camera"
+    android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps"/>
+    <uses-feature android:name="android.hardware.location.network"/>
 </manifest>

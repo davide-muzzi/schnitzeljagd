@@ -45,9 +45,9 @@ export class PermissionsPage implements OnInit {
   }
 
   async startGame(name: string) {
-  if (!this.cameraGranted || !this.locationGranted) {
-    console.warn('Cannot start game, permissions not granted');
-    return;
+    if (!this.cameraGranted || !this.locationGranted) {
+      console.warn('Cannot start game, permissions not granted');
+      return;
     }
 
     await this.gameService.start();
@@ -58,44 +58,33 @@ export class PermissionsPage implements OnInit {
 
   async locationperm() {
     try {
-      if (!Capacitor.isNativePlatform()) {
-      if (!('geolocation' in navigator)) {
-        console.error('Geolocation not supported');
-        this.locationGranted = false;
+      if (Capacitor.getPlatform() === 'web') {
+        if (!navigator.geolocation) {
+          console.error('Geolocation not supported');
+          this.locationGranted = false;
+          return;
+        }
+
+        navigator.geolocation.getCurrentPosition(
+          () => {
+            this.locationGranted = true;
+          },
+          (err) => {
+            console.error('Browser geolocation denied', err);
+            this.locationGranted = false;
+          },
+          { enableHighAccuracy: true }
+        );
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        () => {
-          this.locationGranted = true;
-        },
-        (err) => {
-          console.error('Browser geolocation denied', err);
-          this.locationGranted = false;
-        },
-        { enableHighAccuracy: true }
-      );
-      console.log('Location permission handled by browser');
-      return;
-    }
-
       let perm = await Geolocation.checkPermissions();
-      console.log('Current permission status:', perm);
 
-      if (perm.location !== 'granted') {
-        const request = await Geolocation.requestPermissions();
-        perm = request;
-        console.log('Permission after request:', perm);
+      if (perm.location === 'prompt') {
+        perm = await Geolocation.requestPermissions();
       }
 
-      if (
-        perm.location === 'granted'
-      ) {
-        this.locationGranted = true;
-      } else {
-        console.warn('Location permission denied');
-        this.locationGranted = false;
-      }
+      this.locationGranted = perm.location === 'granted';
     } catch (err) {
       console.error('Error requesting location permission', err);
       this.locationGranted = false;
@@ -105,31 +94,24 @@ export class PermissionsPage implements OnInit {
   async cameraperm() {
     try {
       if (Capacitor.getPlatform() === 'web') {
-        console.log('Camera permission handled by browser');
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        stream.getTracks().forEach(t => t.stop());
         this.cameraGranted = true;
         return;
       }
 
-      const perm = await Camera.checkPermissions();
+      let perm = await Camera.checkPermissions();
 
-      if (perm.camera !== 'granted') {
-        const request = await Camera.requestPermissions();
-        if (request.camera !== 'granted') {
-          console.warn('Camera permission denied');
-          this.cameraGranted = false;
-          return;
-        }
-        this.cameraGranted = true;
+      if (perm.camera === 'prompt') {
+        perm = await Camera.requestPermissions();
       }
 
-      console.log('Camera permission granted');
-      this.cameraGranted = true;
+      this.cameraGranted = perm.camera === 'granted';
     } catch (err) {
       console.error('Error requesting camera permission', err);
       this.cameraGranted = false;
     }
   }
-
   ngOnInit() {
     this.gameService.activeRunObs.subscribe(run => {
       if (run) {
