@@ -342,6 +342,8 @@ export class ChallengePage implements OnInit, OnDestroy {
             this.statusText = `Noch ${this.currentDistanceMeters} m`;
           }
         } catch (err: any) {
+          this.statusText = `${this.playerName}'s location not found`;
+
           // ignore GPS timeouts (very common indoors / browser)
           if (err?.code !== 3) {
             console.error(err);
@@ -352,7 +354,13 @@ export class ChallengePage implements OnInit, OnDestroy {
 
     this.geoWatchId = await Geolocation.watchPosition(
       { enableHighAccuracy: true },
-      (pos) => {
+      (pos, err) => {
+        if (err) {
+          if (ch.id === 'geo_target') {
+            this.statusText = `${this.playerName}'s location not found`;
+          }
+          return;
+        }
         if (!pos) return;
 
         const lat = pos.coords.latitude;

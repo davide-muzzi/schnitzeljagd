@@ -36,12 +36,12 @@
 
       <img
         [src]="
-    currentChallenge?.id === 'geo_target' ? '../assets/icons/pin.svg' :
-    currentChallenge?.id === 'distance'   ? '../assets/icons/footsteps.svg' :
-    currentChallenge?.id === 'qr'         ? '../assets/icons/qr.svg' :
-    currentChallenge?.id === 'charging'   ? '../assets/icons/battery.svg' :
-    currentChallenge?.id === 'wifi'       ? '../assets/icons/wifi.svg' :
-    '../assets/icons/pin.svg'
+    currentChallenge?.id === 'geo_target' ? 'assets/icons/pin.svg' :
+    currentChallenge?.id === 'distance'   ? 'assets/icons/footsteps.svg' :
+    currentChallenge?.id === 'qr'         ? 'assets/icons/qr.svg' :
+    currentChallenge?.id === 'charging'   ? 'assets/icons/battery.svg' :
+    currentChallenge?.id === 'wifi'       ? 'assets/icons/wifi.svg' :
+    'assets/icons/pin.svg'
   "
         alt="Challenge Icon"
         class="main-icon"
@@ -86,9 +86,9 @@
         alt="Action"
       />
 
-      {{ isDone ? 'Challenge abschliessen' : ((currentChallenge?.id === 'geo_target' ||
-      currentChallenge?.id === 'distance') ? 'Challenge abschliessen' :
-      (currentChallenge?.primaryCta || 'Aktion ausführen')) }}
+      {{ isDone ? 'Challenge abschliessen' : ((currentChallenge?.id ===
+      'geo_target' || currentChallenge?.id === 'distance') ? 'Challenge
+      abschliessen' : (currentChallenge?.primaryCta || 'Aktion ausführen')) }}
     </button>
 
     <!-- SKIP -->
