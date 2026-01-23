@@ -1,14 +1,13 @@
 import { Injectable } from '@angular/core';
 import { Capacitor } from '@capacitor/core';
 import { BehaviorSubject } from 'rxjs';
-import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { ActiveRun } from '../models/active-run';
 import { RunResult } from '../models/run-result';
 import { Challenge } from '../models/challenge';
 import { StorageService, StoredScore } from './storage';
 import { LeaderboardApiService } from './leaderboard-api';
-import { randomPointWithinRadius, randomDistanceMeters } from './geo.util';
+import { randomDistanceMeters } from './geo.util';
 
 @Injectable({
   providedIn: 'root',
@@ -40,34 +39,15 @@ export class GameService {
 
     const name = this.getPlayerName() || 'Player';
 
-    let startLat: number | undefined;
-    let startLng: number | undefined;
-
-    try {
-      const pos = await Geolocation.getCurrentPosition({
-        enableHighAccuracy: true,
-        timeout: 10000,
-      });
-
-      startLat = pos.coords.latitude;
-      startLng = pos.coords.longitude;
-    } catch (err) {
-      console.warn('Unable to fetch start location', err);
-    }
-
-    const baseLat = startLat ?? 47.376887;
-    const baseLng = startLng ?? 8.541694;
-    const target = randomPointWithinRadius(baseLat, baseLng, 1000);
     const distanceMeters = randomDistanceMeters(30, 80);
-
-    this.challenges = this.buildChallenges(target, distanceMeters);
+    this.challenges = this.buildChallenges(distanceMeters);
 
     this.activeRun$.next({
       name,
       startedAt: now,
       challengeStartedAt: now,
-      startLat,
-      startLng,
+      startLat: undefined,
+      startLng: undefined,
       currentIndex: 0,
       schnitzel: 0,
       kartoffeln: 0,
@@ -187,20 +167,15 @@ export class GameService {
     });
   }
 
-  private buildChallenges(
-    target: { lat: number; lng: number },
-    distanceMeters: number,
-  ): Challenge[] {
+  private buildChallenges(distanceMeters: number): Challenge[] {
     return [
       {
         id: 'geo_target',
         title: 'Standort finden',
-        intro: `Begib dich zu einem zufälligen Ort in deiner Nähe.\n${target.lat.toFixed(5)}° N, ${target.lng.toFixed(5)}° E`,
+        intro: 'Begib dich zu einem zufälligen Ort in deiner Nähe.',
         primaryCta: 'Standort prüfen',
         potatoAfterSeconds: 180,
         config: {
-          lat: target.lat,
-          lng: target.lng,
           radiusM: 25,
         },
       },

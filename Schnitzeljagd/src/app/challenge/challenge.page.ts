@@ -6,6 +6,7 @@ import { Network } from '@capacitor/network';
 import { Device } from '@capacitor/device';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 import { Capacitor } from '@capacitor/core';
+import { randomPointWithinRadius, randomDistanceMeters } from '../services/geo.util';
 
 import { CommonModule } from '@angular/common';
 import {
@@ -74,6 +75,7 @@ export class ChallengePage implements OnInit, OnDestroy {
   private sawConnected = false;
   private sawDisconnected = false;
   private networkListener: { remove: () => Promise<void> } | null = null;
+  private chargingPollAbort = false;
 
   constructor(
     private game: GameService,
@@ -225,18 +227,17 @@ export class ChallengePage implements OnInit, OnDestroy {
     this.walkedDistanceMeters = 0;
     this.sawConnected = false;
     this.sawDisconnected = false;
+    this.chargingPollAbort = false;
 
     const ch = this.currentChallenge;
     if (!ch) return;
 
     if (ch.id === 'geo_target') {
-      const cfgLat = ch.config?.['lat'];
-      const cfgLng = ch.config?.['lng'];
-      if (typeof cfgLat === 'number' && typeof cfgLng === 'number') {
-        this.targetLat = cfgLat;
-        this.targetLng = cfgLng;
-        this.updateGeoIntroText();
-      }
+      this.statusText = `${this.playerName} sucht den Standort…`;
+    }
+
+    if (ch.id === 'distance') {
+      this.statusText = 'Distanz-Tracking startet…';
     }
 
     if (ch.id === 'geo_target' || ch.id === 'distance') {
@@ -248,6 +249,7 @@ export class ChallengePage implements OnInit, OnDestroy {
     }
 
     if (ch.id === 'charging') {
+      this.statusText = 'Ladezustand wird geprüft…';
       this.pollCharging();
     }
   }
@@ -270,6 +272,8 @@ export class ChallengePage implements OnInit, OnDestroy {
       this.networkListener.remove();
       this.networkListener = null;
     }
+
+    this.chargingPollAbort = true;
   }
 
   // -------------------- GEO + DISTANCE --------------------
@@ -505,7 +509,7 @@ export class ChallengePage implements OnInit, OnDestroy {
   // -------------------- CHARGING --------------------
 
   private async pollCharging(): Promise<void> {
-    for (let i = 0; i < 30 && !this.isDone; i++) {
+    for (let i = 0; i < 30 && !this.isDone && !this.chargingPollAbort; i++) {
       await this.checkCharging();
       await new Promise((r) => setTimeout(r, 2000));
     }
@@ -534,6 +538,8 @@ export class ChallengePage implements OnInit, OnDestroy {
   }
 
   private async checkCharging(): Promise<void> {
+    if (this.currentChallenge?.id !== 'charging') return;
+
     const isCharging = await this.getChargingStatus();
 
     if (isCharging === null) {
