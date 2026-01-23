@@ -57,6 +57,11 @@ export class ChallengePage implements OnInit, OnDestroy {
 
   private walkedDistanceMeters = 0;
   private readonly distanceGoalMeters = 20;
+  private readonly validQrValues = new Set([
+    'First location found',
+    'Second location found',
+    'Third location found',
+  ]);
 
   statusText = '';
   isDone = false;
@@ -486,7 +491,7 @@ export class ChallengePage implements OnInit, OnDestroy {
         return;
       }
 
-      if (raw === this.currentChallenge!.config!['expected']) {
+      if (this.validQrValues.has(raw)) {
         this.isDone = true;
         this.statusText = '✅ QR korrekt!';
       } else {
