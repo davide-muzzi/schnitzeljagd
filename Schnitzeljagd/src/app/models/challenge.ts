@@ -2,7 +2,6 @@ export type ChallengeType =
   | 'geo_target'
   | 'distance'
   | 'qr'
-  | 'sensor'
   | 'charging'
   | 'wifi';
 

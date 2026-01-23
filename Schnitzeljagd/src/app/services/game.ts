@@ -8,8 +8,6 @@ import { Challenge } from '../models/challenge';
 import { StorageService } from './storage';
 import { LeaderboardApiService } from './leaderboard-api';
 import { randomPointWithinRadius, randomDistanceMeters } from './geo.util';
-import { Camera, CameraPermissionType } from '@capacitor/camera';
-import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
 @Injectable({
   providedIn: 'root',
@@ -37,12 +35,34 @@ export class GameService {
 
     const name = this.getPlayerName() || 'Player';
 
+    let startLat: number | undefined;
+    let startLng: number | undefined;
+
+    try {
+      const pos = await Geolocation.getCurrentPosition({
+        enableHighAccuracy: true,
+        timeout: 10000,
+      });
+
+      startLat = pos.coords.latitude;
+      startLng = pos.coords.longitude;
+    } catch (err) {
+      console.warn('Unable to fetch start location', err);
+    }
+
+    const baseLat = startLat ?? 47.376887;
+    const baseLng = startLng ?? 8.541694;
+    const target = randomPointWithinRadius(baseLat, baseLng, 1000);
+    const distanceMeters = randomDistanceMeters(30, 80);
+
+    this.challenges = this.buildChallenges(target, distanceMeters);
+
     this.activeRun$.next({
       name,
       startedAt: now,
       challengeStartedAt: now,
-      startLat: undefined,
-      startLng: undefined,
+      startLat,
+      startLng,
       currentIndex: 0,
       schnitzel: 0,
       kartoffeln: 0,
@@ -53,13 +73,20 @@ export class GameService {
     this.activeRun$.next(null);
   }
 
-  skipChallenge(): void {
+  async skipChallenge(): Promise<void> {
     const run = this.activeRun;
     if (!run) return;
 
+    const nextIndex = run.currentIndex + 1;
+
+    if (nextIndex >= this.challenges.length) {
+      await this.finish(run);
+      return;
+    }
+
     this.activeRun$.next({
       ...run,
-      currentIndex: run.currentIndex + 1,
+      currentIndex: nextIndex,
       challengeStartedAt: Date.now(),
     });
   }
@@ -127,7 +154,7 @@ export class GameService {
       {
         id: 'geo_target',
         title: 'Standort finden',
-        intro: 'Begib dich zu einem zufälligen Ort in deiner Nähe.',
+        intro: `Begib dich zu einem zufälligen Ort in deiner Nähe.\n${target.lat.toFixed(5)}° N, ${target.lng.toFixed(5)}° E`,
         primaryCta: 'Standort prüfen',
         potatoAfterSeconds: 180,
         config: {
@@ -155,13 +182,6 @@ export class GameService {
         config: {
           expected: 'Schnitzeljagd-OK',
         },
-      },
-      {
-        id: 'sensor',
-        title: 'Sensor-Aufgabe',
-        intro: 'Bewege dein Gerät.',
-        primaryCta: 'Sensor prüfen',
-        potatoAfterSeconds: 120,
       },
       {
         id: 'charging',

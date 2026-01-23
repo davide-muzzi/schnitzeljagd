@@ -5,7 +5,7 @@
     <!-- HEADER -->
     <div class="header">
       <div class="header-left">
-        <p class="hello">Hey, Dave 👋</p>
+        <p class="hello">Hey, {{ playerName }} 👋</p>
         <h1>
           Challenge {{ currentIndex + 1 }}/{{ challenges.length || "Error" }}
         </h1>
@@ -39,7 +39,6 @@
     currentChallenge?.id === 'geo_target' ? '../assets/icons/pin.svg' :
     currentChallenge?.id === 'distance'   ? '../assets/icons/footsteps.svg' :
     currentChallenge?.id === 'qr'         ? '../assets/icons/qr.svg' :
-    currentChallenge?.id === 'sensor'     ? '../assets/icons/rotate.svg' :
     currentChallenge?.id === 'charging'   ? '../assets/icons/battery.svg' :
     currentChallenge?.id === 'wifi'       ? '../assets/icons/wifi.svg' :
     '../assets/icons/pin.svg'
@@ -87,10 +86,9 @@
         alt="Action"
       />
 
-      {{ isDone ? 'Challenge abschliessen' : (currentChallenge?.id === 'qr' ?
-      'QR-Code scannen' : (currentChallenge?.id === 'geo_target' ||
-      currentChallenge?.id === 'distance' ? 'Challenge abschliessen' : 'Aufgabe
-      prüfen')) }}
+      {{ isDone ? 'Challenge abschliessen' : ((currentChallenge?.id === 'geo_target' ||
+      currentChallenge?.id === 'distance') ? 'Challenge abschliessen' :
+      (currentChallenge?.primaryCta || 'Aktion ausführen')) }}
     </button>
 
     <!-- SKIP -->

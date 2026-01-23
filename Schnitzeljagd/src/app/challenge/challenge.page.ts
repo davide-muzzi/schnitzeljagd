@@ -133,6 +133,14 @@ export class ChallengePage implements OnInit, OnDestroy {
     return this.game.activeRun?.currentIndex ?? 0;
   }
 
+  get playerName(): string {
+    return (
+      this.game.activeRun?.name ||
+      this.game.getPlayerName() ||
+      'Player'
+    );
+  }
+
   // -------------------- UI ACTIONS --------------------
 
   abort(): void {
@@ -140,10 +148,10 @@ export class ChallengePage implements OnInit, OnDestroy {
     this.router.navigateByUrl('/leaderboard');
   }
 
-  nextChallenge(): void {
+  async nextChallenge(): Promise<void> {
     if (!this.isDone) return;
 
-    this.game.completeChallenge();
+    await this.game.completeChallenge();
 
     if (!this.game.activeRun) {
       this.router.navigateByUrl('/result');
@@ -153,8 +161,14 @@ export class ChallengePage implements OnInit, OnDestroy {
     this.resetChallenge();
   }
 
-  skipChallenge(): void {
-    this.game.skipChallenge();
+  async skipChallenge(): Promise<void> {
+    await this.game.skipChallenge();
+
+    if (!this.game.activeRun) {
+      this.router.navigateByUrl('/result');
+      return;
+    }
+
     this.resetChallenge();
   }
 
@@ -165,9 +179,6 @@ export class ChallengePage implements OnInit, OnDestroy {
     switch (ch.id) {
       case 'qr':
         this.scanQr();
-        break;
-      case 'sensor':
-        this.checkSensor();
         break;
       case 'charging':
         this.checkCharging();
@@ -187,11 +198,24 @@ export class ChallengePage implements OnInit, OnDestroy {
     this.isDone = false;
     this.statusText = '';
     this.walkedMeters = 0;
+    this.distanceStartLat = undefined;
+    this.distanceStartLng = undefined;
+    this.walkedDistanceMeters = 0;
     this.sawConnected = false;
     this.sawDisconnected = false;
 
     const ch = this.currentChallenge;
     if (!ch) return;
+
+    if (ch.id === 'geo_target') {
+      const cfgLat = ch.config?.['lat'];
+      const cfgLng = ch.config?.['lng'];
+      if (typeof cfgLat === 'number' && typeof cfgLng === 'number') {
+        this.targetLat = cfgLat;
+        this.targetLng = cfgLng;
+        this.updateGeoIntroText();
+      }
+    }
 
     if (ch.id === 'geo_target' || ch.id === 'distance') {
       this.startGeoTracking(ch);
@@ -254,6 +278,22 @@ export class ChallengePage implements OnInit, OnDestroy {
     };
   }
 
+  private updateGeoIntroText(): void {
+    if (
+      this.targetLat === undefined ||
+      this.targetLng === undefined
+    ) {
+      return;
+    }
+
+    const ch = this.currentChallenge;
+    if (!ch || ch.id !== 'geo_target') return;
+
+    const coords = `${this.targetLat.toFixed(5)}\u00b0 N, ${this.targetLng.toFixed(5)}\u00b0 E`;
+    ch.intro =
+      'Begib dich zu einem zuf\u00e4lligen Ort in deiner N\u00e4he.\n' + coords;
+  }
+
   private async startGeoTracking(ch: Challenge): Promise<void> {
     let lastLat: number | null = null;
     let lastLng: number | null = null;
@@ -283,9 +323,7 @@ export class ChallengePage implements OnInit, OnDestroy {
             this.targetLng = generated.targetLongitude;
 
             // show coordinates to user
-            this.currentChallenge!.intro =
-              `Begib dich zu einem zufälligen Ort in deiner Nähe.\n` +
-              `${this.targetLat.toFixed(5)}° N, ${this.targetLng.toFixed(5)}° E`;
+            this.updateGeoIntroText();
           }
 
           const distanceToTarget = this.distance(
@@ -332,9 +370,7 @@ export class ChallengePage implements OnInit, OnDestroy {
             this.targetLat = generated.targetLatitude;
             this.targetLng = generated.targetLongitude;
 
-            this.currentChallenge!.intro =
-              'Begib dich zu einem zufälligen Ort in deiner Nähe.\n' +
-              `${this.targetLat.toFixed(5)}° N, ${this.targetLng.toFixed(5)}° E`;
+            this.updateGeoIntroText();
           }
 
           const distanceToTarget = this.distance(
@@ -434,47 +470,6 @@ export class ChallengePage implements OnInit, OnDestroy {
     } catch {
       this.statusText = '❌ Scan abgebrochen';
     }
-  }
-
-  // -------------------- SENSOR --------------------
-
-  private checkSensor(): void {
-    this.statusText = 'Gerät bewegen…';
-
-    let swings = 0;
-    let upsideDown = false;
-
-    const orient = (e: DeviceOrientationEvent) => {
-      if (Math.abs(Math.abs(e.beta ?? 0) - 180) < 25) {
-        upsideDown = true;
-      }
-    };
-
-    const motion = (e: DeviceMotionEvent) => {
-      const a = e.accelerationIncludingGravity;
-      if (!a) return;
-
-      const mag = Math.sqrt(
-        (a.x ?? 0) ** 2 + (a.y ?? 0) ** 2 + (a.z ?? 0) ** 2,
-      );
-
-      if (mag > 18) swings++;
-
-      if (upsideDown && swings >= 2) {
-        window.removeEventListener('deviceorientation', orient);
-        window.removeEventListener('devicemotion', motion);
-        this.isDone = true;
-        this.statusText = '✅ Sensor erkannt!';
-      }
-    };
-
-    window.addEventListener('deviceorientation', orient);
-    window.addEventListener('devicemotion', motion);
-
-    setTimeout(() => {
-      window.removeEventListener('deviceorientation', orient);
-      window.removeEventListener('devicemotion', motion);
-    }, 12000);
   }
 
   // -------------------- CHARGING --------------------
