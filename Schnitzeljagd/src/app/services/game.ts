@@ -5,7 +5,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { ActiveRun } from '../models/active-run';
 import { RunResult } from '../models/run-result';
 import { Challenge } from '../models/challenge';
-import { StorageService } from './storage';
+import { StorageService, StoredScore } from './storage';
 import { LeaderboardApiService } from './leaderboard-api';
 import { randomPointWithinRadius, randomDistanceMeters } from './geo.util';
 
@@ -28,6 +28,10 @@ export class GameService {
 
   get activeRun(): ActiveRun | null {
     return this.activeRun$.value;
+  }
+
+  get lastResult(): RunResult | null {
+    return this.lastResult$.value;
   }
 
   async start(): Promise<void> {
@@ -139,7 +143,13 @@ export class GameService {
       points,
     };
 
-    await this.storage.saveRun(result);
+    const summary: StoredScore = {
+      name: result.name,
+      dateIso: result.dateIso,
+      points: result.points,
+    };
+
+    await this.storage.saveRun(summary);
     await this.leaderboardApi.submit(result).catch(() => { });
 
     this.lastResult$.next(result);

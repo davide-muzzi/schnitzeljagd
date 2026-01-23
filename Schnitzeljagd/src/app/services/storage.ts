@@ -1,25 +1,29 @@
 import { Injectable } from '@angular/core';
 import { Preferences } from '@capacitor/preferences';
-import { RunResult } from '../models/run-result';
-
 const STORAGE_KEY = 'schnitzeljagd_runs';
+
+export interface StoredScore {
+  name: string;
+  dateIso: string;
+  points: number;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class StorageService {
-  async getRuns(): Promise<RunResult[]> {
+  async getRuns(): Promise<StoredScore[]> {
     const { value } = await Preferences.get({ key: STORAGE_KEY });
     if (!value) return [];
 
     try {
-      return JSON.parse(value) as RunResult[];
+      return JSON.parse(value) as StoredScore[];
     } catch {
       return [];
     }
   }
 
-  async saveRun(run: RunResult): Promise<void> {
+  async saveRun(run: StoredScore): Promise<void> {
     const runs = await this.getRuns();
     runs.unshift(run);
 
