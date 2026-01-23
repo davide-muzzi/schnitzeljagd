@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Capacitor } from '@capacitor/core';
 import { BehaviorSubject } from 'rxjs';
 import { Geolocation } from '@capacitor/geolocation';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
@@ -152,10 +153,38 @@ export class GameService {
     };
 
     await this.storage.saveRun(summary);
+    this.submitResultOnline(result).catch(() => {});
     await this.leaderboardApi.submit(result).catch(() => { });
 
     this.lastResult$.next(result);
     this.activeRun$.next(null);
+  }
+
+  private async submitResultOnline(result: RunResult): Promise<void> {
+    if (!Capacitor.isNativePlatform()) return;
+
+    const url =
+      'https://docs.google.com/forms/u/0/d/e/1FAIpQLSc9v68rbCckYwcIekRLOaVZ0Qdm3eeh1xCEkgpn3d7pParfLQ/formResponse';
+
+    const hours = Math.floor(result.durationSeconds / 3600)
+      .toString()
+      .padStart(2, '0');
+    const minutes = Math.floor((result.durationSeconds % 3600) / 60)
+      .toString()
+      .padStart(2, '0');
+    const seconds = (result.durationSeconds % 60).toString().padStart(2, '0');
+
+    const body =
+      `entry.1860183935=${encodeURIComponent(result.name)}` +
+      `&entry.564282981=${result.schnitzel}` +
+      `&entry.1079317865=${result.kartoffeln}` +
+      `&entry.985590604=${hours}:${minutes}:${seconds}`;
+
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    });
   }
 
   private buildChallenges(

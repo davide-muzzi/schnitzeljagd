@@ -19,49 +19,25 @@
         <span>Top Jäger</span>
       </div>
 
-      <div class="leader first">
+      <div
+        class="leader"
+        [class.first]="idx === 0"
+        *ngFor="let leader of topJagers; let idx = index"
+      >
         <div class="avatar">
-          👩‍🦰
-          <div class="trophy-badge">
+          {{ avatars[idx] }}
+          <div class="trophy-badge" *ngIf="idx === 0">
             <img src="../assets/icons/trophy.svg" alt="Trophy" />
           </div>
         </div>
 
         <div class="info">
-          <strong>Anna S.</strong>
-          <span>#1 Platz</span>
+          <strong>{{ leader?.name || '---' }}</strong>
+          <span>#{{ idx + 1 }} Platz</span>
         </div>
 
         <div class="points">
-          480<br />
-          <small>Punkte</small>
-        </div>
-      </div>
-
-      <div class="leader">
-        <div class="avatar">🧑‍🦱</div>
-
-        <div class="info">
-          <strong>Max M.</strong>
-          <span>#2 Platz</span>
-        </div>
-
-        <div class="points">
-          460<br />
-          <small>Punkte</small>
-        </div>
-      </div>
-
-      <div class="leader">
-        <div class="avatar">👱‍♀️</div>
-
-        <div class="info">
-          <strong>Lisa W.</strong>
-          <span>#3 Platz</span>
-        </div>
-
-        <div class="points">
-          440<br />
+          {{ leader?.points ?? '---' }}<br />
           <small>Punkte</small>
         </div>
       </div>

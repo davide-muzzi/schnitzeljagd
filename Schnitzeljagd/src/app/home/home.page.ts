@@ -1,19 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { GameService } from '../services/game';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonAlert } from '@ionic/angular/standalone';
+import {
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+  IonAlert,
+} from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
+import { StorageService, StoredScore } from '../services/storage';
+import { CommonModule } from '@angular/common';
 
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonAlert],
+  imports: [CommonModule, IonHeader, IonToolbar, IonTitle, IonContent, IonAlert],
 })
-export class HomePage {
+export class HomePage implements OnInit {
 
 
-  constructor(private gameService: GameService, private router: Router) { }
+  constructor(
+    private gameService: GameService,
+    private router: Router,
+    private storage: StorageService,
+  ) { }
 
   public startButton = [
     {
@@ -45,4 +57,17 @@ export class HomePage {
       }
     }
   ];
+
+  topJagers: (StoredScore | null)[] = [null, null, null];
+  readonly avatars = ['🥇', '🥈', '🥉'];
+
+  async ngOnInit() {
+    await this.loadLeaders();
+  }
+
+  private async loadLeaders(): Promise<void> {
+    const runs = await this.storage.getRuns();
+    runs.sort((a, b) => b.points - a.points);
+    this.topJagers = Array.from({ length: 3 }, (_, idx) => runs[idx] ?? null);
+  }
 }
