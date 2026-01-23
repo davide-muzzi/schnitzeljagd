@@ -54,13 +54,6 @@ You can also open the native project directly (`npx cap open android` / `ios`) a
 npm run build      # outputs to dist/
 ```
 
-### Tests & Linting
-
-```bash
-npm test           # Karma + Jasmine unit tests
-npm run lint       # Angular ESLint suite
-```
-
 ## QR Codes & Challenge Details
 
 - QR challenge succeeds only when the scanned barcode text equals one of:
