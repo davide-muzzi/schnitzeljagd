@@ -81,6 +81,8 @@ export class GameService {
     const run = this.activeRun;
     if (!run) return;
 
+    await Haptics.impact({ style: ImpactStyle.Light });
+
     const nextIndex = run.currentIndex + 1;
 
     if (nextIndex >= this.challenges.length) {
