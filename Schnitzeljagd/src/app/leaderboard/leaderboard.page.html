@@ -95,7 +95,7 @@
           class="history-item"
           *ngFor="let run of allRuns; trackBy: trackByIndex"
         >
-          {{ run?.name }} ? {{ run?.dateIso | date: 'dd.MM.yyyy HH:mm' }} ? {{
+          {{ run?.name }} | {{ run?.dateIso | date: 'dd.MM.yyyy HH:mm' }} | {{
           run?.points }} pts
         </div>
       </div>
