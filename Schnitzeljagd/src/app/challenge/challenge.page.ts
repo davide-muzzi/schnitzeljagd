@@ -137,22 +137,18 @@ export class ChallengePage implements OnInit, OnDestroy {
   }
 
   get playerName(): string {
-    return (
-      this.game.activeRun?.name ||
-      this.game.getPlayerName() ||
-      'Player'
-    );
+    return this.game.activeRun?.name || this.game.getPlayerName() || 'Player';
   }
 
   get challengeIcon(): string {
     const base = 'assets/icons';
     switch (this.currentChallenge?.id) {
       case 'distance':
-        return `${base}/footsteps.svg`;
+        return `${base}/footprints.svg`;
       case 'qr':
-        return `${base}/qr.svg`;
+        return `${base}/qr_code_scan.svg`;
       case 'charging':
-        return `${base}/battery.svg`;
+        return `${base}/charging_battery.svg`;
       case 'wifi':
         return `${base}/wifi.svg`;
       case 'geo_target':
@@ -299,10 +295,7 @@ export class ChallengePage implements OnInit, OnDestroy {
   }
 
   private updateGeoIntroText(): void {
-    if (
-      this.targetLat === undefined ||
-      this.targetLng === undefined
-    ) {
+    if (this.targetLat === undefined || this.targetLng === undefined) {
       return;
     }
 
