@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Geolocation } from '@capacitor/geolocation';
@@ -72,6 +72,7 @@ export class ChallengePage implements OnInit, OnDestroy {
   constructor(
     private game: GameService,
     private router: Router,
+    private zone: NgZone,
   ) {}
 
   // -------------------- LIFECYCLE --------------------
@@ -85,7 +86,9 @@ export class ChallengePage implements OnInit, OnDestroy {
     }
 
     this.timerInterval = setInterval(() => {
-      this.elapsedSeconds++;
+      this.zone.run(() => {
+        this.elapsedSeconds++;
+      });
     }, 1000);
 
     this.resetChallenge();
@@ -139,6 +142,23 @@ export class ChallengePage implements OnInit, OnDestroy {
       this.game.getPlayerName() ||
       'Player'
     );
+  }
+
+  get challengeIcon(): string {
+    const base = 'assets/icons';
+    switch (this.currentChallenge?.id) {
+      case 'distance':
+        return `${base}/footsteps.svg`;
+      case 'qr':
+        return `${base}/qr.svg`;
+      case 'charging':
+        return `${base}/battery.svg`;
+      case 'wifi':
+        return `${base}/wifi.svg`;
+      case 'geo_target':
+      default:
+        return `${base}/pin.svg`;
+    }
   }
 
   // -------------------- UI ACTIONS --------------------
@@ -295,9 +315,6 @@ export class ChallengePage implements OnInit, OnDestroy {
   }
 
   private async startGeoTracking(ch: Challenge): Promise<void> {
-    let lastLat: number | null = null;
-    let lastLng: number | null = null;
-
     if (ch.id === 'geo_target') {
       this.geoInterval = setInterval(async () => {
         if (this.isDone) return;
@@ -308,41 +325,45 @@ export class ChallengePage implements OnInit, OnDestroy {
             timeout: 10000,
           });
 
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
+          this.zone.run(() => {
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
 
-          // generate random target once
-          if (this.targetLat === undefined || this.targetLng === undefined) {
-            const generated = this.generateRandomTargetWithinRadius(
+            // generate random target once
+            if (this.targetLat === undefined || this.targetLng === undefined) {
+              const generated = this.generateRandomTargetWithinRadius(
+                lat,
+                lng,
+                2000,
+              );
+
+              this.targetLat = generated.targetLatitude;
+              this.targetLng = generated.targetLongitude;
+
+              // show coordinates to user
+              this.updateGeoIntroText();
+            }
+
+            const distanceToTarget = this.distance(
               lat,
               lng,
-              2000,
+              this.targetLat!,
+              this.targetLng!,
             );
 
-            this.targetLat = generated.targetLatitude;
-            this.targetLng = generated.targetLongitude;
+            this.currentDistanceMeters = Math.round(distanceToTarget);
 
-            // show coordinates to user
-            this.updateGeoIntroText();
-          }
-
-          const distanceToTarget = this.distance(
-            lat,
-            lng,
-            this.targetLat,
-            this.targetLng,
-          );
-
-          this.currentDistanceMeters = Math.round(distanceToTarget);
-
-          if (distanceToTarget <= 25) {
-            this.isDone = true;
-            this.statusText = 'Standort gefunden';
-          } else {
-            this.statusText = `Noch ${this.currentDistanceMeters} m`;
-          }
+            if (distanceToTarget <= 25) {
+              this.isDone = true;
+              this.statusText = 'Standort gefunden';
+            } else {
+              this.statusText = `Noch ${this.currentDistanceMeters} m`;
+            }
+          });
         } catch (err: any) {
-          this.statusText = `${this.playerName}'s location not found`;
+          this.zone.run(() => {
+            this.statusText = `${this.playerName}'s location not found`;
+          });
 
           // ignore GPS timeouts (very common indoors / browser)
           if (err?.code !== 3) {
@@ -355,79 +376,81 @@ export class ChallengePage implements OnInit, OnDestroy {
     this.geoWatchId = await Geolocation.watchPosition(
       { enableHighAccuracy: true },
       (pos, err) => {
-        if (err) {
-          if (ch.id === 'geo_target') {
-            this.statusText = `${this.playerName}'s location not found`;
+        this.zone.run(() => {
+          if (err) {
+            if (ch.id === 'geo_target' || ch.id === 'distance') {
+              this.statusText = `${this.playerName}'s location not found`;
+            }
+            return;
           }
-          return;
-        }
-        if (!pos) return;
+          if (!pos) return;
 
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
 
-        /* ───────────── Challenge 1: GEO TARGET ───────────── */
-        if (ch.id === 'geo_target') {
-          if (this.targetLat === undefined || this.targetLng === undefined) {
-            const generated = this.generateRandomTargetWithinRadius(
+          /* ??????????? Challenge 1: GEO TARGET ??????????? */
+          if (ch.id === 'geo_target') {
+            if (this.targetLat === undefined || this.targetLng === undefined) {
+              const generated = this.generateRandomTargetWithinRadius(
+                lat,
+                lng,
+                2000,
+              );
+
+              this.targetLat = generated.targetLatitude;
+              this.targetLng = generated.targetLongitude;
+
+              this.updateGeoIntroText();
+            }
+
+            const distanceToTarget = this.distance(
               lat,
               lng,
-              2000,
+              this.targetLat!,
+              this.targetLng!,
             );
 
-            this.targetLat = generated.targetLatitude;
-            this.targetLng = generated.targetLongitude;
+            this.currentDistanceMeters = Math.round(distanceToTarget);
 
-            this.updateGeoIntroText();
+            if (distanceToTarget <= 25) {
+              this.isDone = true;
+              this.statusText = 'Standort gefunden';
+            } else {
+              this.statusText = `Noch ${this.currentDistanceMeters} m`;
+            }
           }
 
-          const distanceToTarget = this.distance(
-            lat,
-            lng,
-            this.targetLat,
-            this.targetLng,
-          );
+          /* ??????????? Challenge 2: WALK DISTANCE ??????????? */
+          if (ch.id === 'distance') {
+            if (
+              this.distanceStartLat === undefined ||
+              this.distanceStartLng === undefined
+            ) {
+              this.distanceStartLat = lat;
+              this.distanceStartLng = lng;
+              this.walkedDistanceMeters = 0;
+            }
 
-          this.currentDistanceMeters = Math.round(distanceToTarget);
+            const walked = this.distance(
+              this.distanceStartLat,
+              this.distanceStartLng,
+              lat,
+              lng,
+            );
 
-          if (distanceToTarget <= 25) {
-            this.isDone = true;
-            this.statusText = 'Standort gefunden';
-          } else {
-            this.statusText = `Noch ${this.currentDistanceMeters} m`;
+            this.walkedDistanceMeters = Math.round(walked);
+
+            const goal = (ch.config?.['goalM'] as number) ?? 20;
+            const remaining = Math.max(goal - this.walkedDistanceMeters, 0);
+
+            if (remaining <= 0) {
+              this.isDone = true;
+              this.statusText = 'Distanz erreicht';
+            } else {
+              this.statusText = `Noch ${remaining} m`;
+            }
           }
-        }
-
-        /* ───────────── Challenge 2: WALK DISTANCE ───────────── */
-        if (ch.id === 'distance') {
-          if (
-            this.distanceStartLat === undefined ||
-            this.distanceStartLng === undefined
-          ) {
-            this.distanceStartLat = lat;
-            this.distanceStartLng = lng;
-            this.walkedDistanceMeters = 0;
-          }
-
-          const walked = this.distance(
-            this.distanceStartLat,
-            this.distanceStartLng,
-            lat,
-            lng,
-          );
-
-          this.walkedDistanceMeters = Math.round(walked);
-
-          const goal = (ch.config?.['goalM'] as number) ?? 20;
-          const remaining = Math.max(goal - this.walkedDistanceMeters, 0);
-
-          if (remaining <= 0) {
-            this.isDone = true;
-            this.statusText = 'Distanz erreicht';
-          } else {
-            this.statusText = `Noch ${remaining} m`;
-          }
-        }
+        });
       },
     );
   }
