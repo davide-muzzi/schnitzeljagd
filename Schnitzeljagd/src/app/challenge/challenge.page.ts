@@ -5,6 +5,7 @@ import { Geolocation } from '@capacitor/geolocation';
 import { Network } from '@capacitor/network';
 import { Device } from '@capacitor/device';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { Capacitor } from '@capacitor/core';
 
 import { CommonModule } from '@angular/common';
 import {
@@ -505,9 +506,37 @@ export class ChallengePage implements OnInit, OnDestroy {
     }
   }
 
+  private async getChargingStatus(): Promise<boolean | null> {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const info = await Device.getBatteryInfo();
+        if (typeof info.isCharging === 'boolean') {
+          return info.isCharging;
+        }
+        return null;
+      }
+
+      const nav = navigator as any;
+      if (nav?.getBattery) {
+        const battery = await nav.getBattery();
+        return !!battery?.charging;
+      }
+    } catch (err) {
+      console.warn('Battery status unavailable', err);
+    }
+
+    return null;
+  }
+
   private async checkCharging(): Promise<void> {
-    const info = await Device.getBatteryInfo();
-    if (info.isCharging) {
+    const isCharging = await this.getChargingStatus();
+
+    if (isCharging === null) {
+      this.statusText = 'Batteriestatus nicht verfügbar';
+      return;
+    }
+
+    if (isCharging) {
       this.isDone = true;
       this.statusText = '✅ Gerät lädt';
     } else {
